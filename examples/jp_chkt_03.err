@@ -1,0 +1,3 @@
+Line 3:2 error: Instruction 'if' requires a boolean condition.
+Line 6:2 error: Instruction 'while' requires a boolean condition.
+Line 7:7 error: Assignment with incompatible types.

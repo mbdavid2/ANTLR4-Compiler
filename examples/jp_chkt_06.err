@@ -1,0 +1,3 @@
+Line 7:11 error: Operator 'or' with incompatible types.
+Line 7:4 error: Assignment with incompatible types.
+Line 9:0 error: There is no 'main' function properly declared.

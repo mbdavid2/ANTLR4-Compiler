@@ -1,0 +1,10 @@
+Line 2:2 error: Return with incompatible type.
+Line 4:2 error: Return with incompatible type.
+Line 5:2 error: Return with incompatible type.
+Line 10:2 error: Return with incompatible type.
+Line 17:2 error: Return with incompatible type.
+Line 21:2 error: Return with incompatible type.
+Line 27:2 error: Basic type required in 'read'.
+Line 28:2 error: Basic type required in 'write'.
+Line 29:2 error: Referenceable expression required in 'read'.
+Line 30:2 error: Basic type required in 'write'.

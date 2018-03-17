@@ -1,0 +1,6 @@
+Line 3:6 error: Identifier 'b' already declared.
+Line 4:11 error: Operator '+' with incompatible types.
+Line 5:4 error: Assignment with incompatible types.
+Line 6:13 error: Array access witn non integer index.
+Line 6:8 error: Parameter #1 with incompatible types in call to 'f'.
+Line 6:11 error: Parameter #2 with incompatible types in call to 'f'.

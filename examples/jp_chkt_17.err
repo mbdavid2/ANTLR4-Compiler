@@ -1,0 +1,3 @@
+Line 4:4 error: Assignment with incompatible types.
+Line 7:8 error: Parameter #1 with incompatible types in call to 'f'.
+Line 7:4 error: Assignment with incompatible types.

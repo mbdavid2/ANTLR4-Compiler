@@ -1,0 +1,9 @@
+Line 12:7 error: Assignment with incompatible types.
+Line 12:4 error: Left expression of assignment is not referenceable.
+Line 13:7 error: Assignment with incompatible types.
+Line 14:4 error: Referenceable expression required in 'read'.
+Line 20:18 error: Operator '==' with incompatible types.
+Line 20:7 error: Assignment with incompatible types.
+Line 22:4 error: Instruction 'if' requires a boolean condition.
+Line 23:8 error: Basic type required in 'write'.
+Line 25:7 error: Assignment with incompatible types.

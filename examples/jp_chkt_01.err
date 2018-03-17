@@ -1,0 +1,8 @@
+Line 10:24 error: Operator 'and' with incompatible types.
+Line 11:4 error: Assignment with incompatible types.
+Line 12:16 error: Operator '-' with incompatible types.
+Line 14:15 error: Identifier 'q' is undeclared.
+Line 15:4 error: Assignment with incompatible types.
+Line 17:7 error: Identifier 'd' is undeclared.
+Line 17:15 error: Operator '+' with incompatible types.
+Line 17:4 error: Assignment with incompatible types.

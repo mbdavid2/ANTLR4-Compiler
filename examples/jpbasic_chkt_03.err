@@ -1,0 +1,7 @@
+Line 3:12 error: Operator '==' with incompatible types.
+Line 3:7 error: Assignment with incompatible types.
+Line 8:4 error: Identifier 'f3' is not a callable function.
+Line 9:4 error: Instruction 'if' requires a boolean condition.
+Line 10:8 error: Basic type required in 'write'.
+Line 11:8 error: Identifier 'h3' is undeclared.
+Line 14:0 error: There is no 'main' function properly declared.

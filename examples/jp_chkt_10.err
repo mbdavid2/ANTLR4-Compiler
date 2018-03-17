@@ -1,0 +1,6 @@
+Line 6:4 error: Assignment with incompatible types.
+Line 8:4 error: Assignment with incompatible types.
+Line 11:4 error: Assignment with incompatible types.
+Line 12:4 error: Assignment with incompatible types.
+Line 14:4 error: Assignment with incompatible types.
+Line 14:2 error: Left expression of assignment is not referenceable.

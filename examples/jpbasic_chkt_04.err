@@ -1,0 +1,4 @@
+Line 4:2 error: Referenceable expression required in 'read'.
+Line 6:13 error: Identifier 'b' is undeclared.
+Line 10:4 error: Assignment with incompatible types.
+Line 10:2 error: Left expression of assignment is not referenceable.

@@ -1,0 +1,6 @@
+Line 2:6 error: Identifier 'b' is undeclared.
+Line 3:2 error: Identifier 'c' is undeclared.
+Line 4:2 error: Identifier 'b' is undeclared.
+Line 5:6 error: Identifier 'c' is undeclared.
+Line 7:2 error: Identifier 'h' is undeclared.
+Line 13:2 error: Identifier 'a' is undeclared.

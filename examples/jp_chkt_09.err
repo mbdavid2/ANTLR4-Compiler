@@ -1,0 +1,5 @@
+Line 2:4 error: Assignment with incompatible types.
+Line 2:2 error: Left expression of assignment is not referenceable.
+Line 3:2 error: Array access to a non array operand.
+Line 4:2 error: Referenceable expression required in 'read'.
+Line 5:7 error: Array access to a non array operand.

@@ -1,0 +1,3 @@
+Line 4:2 error: Referenceable expression required in 'read'.
+Line 6:2 error: Basic type required in 'read'.
+Line 7:7 error: Identifier 'x' is undeclared.

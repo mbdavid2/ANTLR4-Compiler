@@ -1,0 +1,4 @@
+Line 3:11 error: Operator '+' with incompatible types.
+Line 4:4 error: Assignment with incompatible types.
+Line 5:18 error: Operator '+' with incompatible types.
+Line 5:15 error: Parameter #2 with incompatible types in call to 'f'.

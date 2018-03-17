@@ -1,0 +1,4 @@
+Line 5:11 error: Operator '>' with incompatible types.
+Line 12:6 error: Identifier 'p' is a void returning function.
+Line 13:2 error: Identifier 'a' is not a callable function.
+Line 14:6 error: Identifier 'a' is not a callable function.
