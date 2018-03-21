@@ -38,8 +38,13 @@ program : function+ EOF
 
 // A function has a name, a list of parameters and a list of statements
 function
-        : FUNC ID '(' ')' declarations statements ENDFUNC
-        ;
+        : FUNC ID '(' (parameters)? ')' declarations statements ENDFUNC
+        | FUNC ID '(' (parameters)? ')' ':' type declarations statements RETURN expr ENDFUNC
+        ;     
+
+parameters
+		: ID ':' type (',' ID ':' type)*
+		;
 
 declarations
         : (variable_decl)*
@@ -81,6 +86,7 @@ statement
 // Grammar for left expressions (l-values in C++)
 left_expr
         : ident
+        | ident '[' expr ']'
         ;
 
 // Grammar for expressions with boolean, relational and aritmetic operators
@@ -88,10 +94,12 @@ expr    : expr (op=MUL|op=DIV | op=MOD) expr  # arithmetic
         | expr (op=PLUS|op=MINUS) expr        # arithmetic
         | expr (op=EQUAL|op=NOTEQUAL|op=LESS|op=LESSEQ|op=BIGGER|op=BIGGEREQ) expr                  # relational
         | expr (op=AND|op=OR) expr            # binaryop
-        | BOOLEAN                              # boolean
+        | BOOLEAN                             # boolean
         | op=INTVAL                           # value
         | op=FLOATVAL                         # value
+        | op=CHARVAL						  # value 
         | ident                               # exprIdent
+        | ident '[' expr ']'				  # arrayAccess
         
         ;
 
@@ -143,6 +151,7 @@ BOOLEAN   : TRUE | FALSE;
 ID        : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
 INTVAL    : ('0'..'9')+ ;
 FLOATVAL  : (INTVAL '.' INTVAL);
+CHARVAL	  : ('a'..'z'|'A'..'Z');
 
 
 
