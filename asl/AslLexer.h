@@ -15,11 +15,11 @@ public:
     T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, T__5 = 6, T__6 = 7, 
     ASSIGN = 8, EQUAL = 9, NOTEQUAL = 10, LESS = 11, LESSEQ = 12, BIGGER = 13, 
     BIGGEREQ = 14, PLUS = 15, MINUS = 16, MUL = 17, DIV = 18, MOD = 19, 
-    VAR = 20, INT = 21, FLOAT = 22, BOOL = 23, CHAR = 24, AND = 25, OR = 26, 
-    IF = 27, THEN = 28, ELSE = 29, ENDIF = 30, WHILE = 31, ENDWHILE = 32, 
-    DO = 33, FUNC = 34, ENDFUNC = 35, READ = 36, WRITE = 37, ARRAY = 38, 
-    OF = 39, RETURN = 40, TRUE = 41, FALSE = 42, BOOLEAN = 43, ID = 44, 
-    INTVAL = 45, FLOATVAL = 46, STRING = 47, COMMENT = 48, WS = 49
+    VAR = 20, INT = 21, FLOAT = 22, BOOL = 23, CHAR = 24, NOT = 25, AND = 26, 
+    OR = 27, IF = 28, THEN = 29, ELSE = 30, ENDIF = 31, WHILE = 32, ENDWHILE = 33, 
+    DO = 34, FUNC = 35, ENDFUNC = 36, READ = 37, WRITE = 38, ARRAY = 39, 
+    OF = 40, RETURN = 41, BOOLEAN = 42, TRUE = 43, FALSE = 44, CHARVAL = 45, 
+    INTVAL = 46, FLOATVAL = 47, ID = 48, STRING = 49, COMMENT = 50, WS = 51
   };
 
   AslLexer(antlr4::CharStream *input);

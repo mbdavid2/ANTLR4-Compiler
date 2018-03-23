@@ -20,6 +20,9 @@ public:
   virtual void enterFunction(AslParser::FunctionContext *ctx) = 0;
   virtual void exitFunction(AslParser::FunctionContext *ctx) = 0;
 
+  virtual void enterParameters(AslParser::ParametersContext *ctx) = 0;
+  virtual void exitParameters(AslParser::ParametersContext *ctx) = 0;
+
   virtual void enterDeclarations(AslParser::DeclarationsContext *ctx) = 0;
   virtual void exitDeclarations(AslParser::DeclarationsContext *ctx) = 0;
 
@@ -53,14 +56,14 @@ public:
   virtual void enterWriteString(AslParser::WriteStringContext *ctx) = 0;
   virtual void exitWriteString(AslParser::WriteStringContext *ctx) = 0;
 
+  virtual void enterReturnExpr(AslParser::ReturnExprContext *ctx) = 0;
+  virtual void exitReturnExpr(AslParser::ReturnExprContext *ctx) = 0;
+
   virtual void enterLeft_expr(AslParser::Left_exprContext *ctx) = 0;
   virtual void exitLeft_expr(AslParser::Left_exprContext *ctx) = 0;
 
   virtual void enterBinaryop(AslParser::BinaryopContext *ctx) = 0;
   virtual void exitBinaryop(AslParser::BinaryopContext *ctx) = 0;
-
-  virtual void enterBoolean(AslParser::BooleanContext *ctx) = 0;
-  virtual void exitBoolean(AslParser::BooleanContext *ctx) = 0;
 
   virtual void enterExprIdent(AslParser::ExprIdentContext *ctx) = 0;
   virtual void exitExprIdent(AslParser::ExprIdentContext *ctx) = 0;
@@ -70,6 +73,15 @@ public:
 
   virtual void enterRelational(AslParser::RelationalContext *ctx) = 0;
   virtual void exitRelational(AslParser::RelationalContext *ctx) = 0;
+
+  virtual void enterUnary(AslParser::UnaryContext *ctx) = 0;
+  virtual void exitUnary(AslParser::UnaryContext *ctx) = 0;
+
+  virtual void enterArrayAccess(AslParser::ArrayAccessContext *ctx) = 0;
+  virtual void exitArrayAccess(AslParser::ArrayAccessContext *ctx) = 0;
+
+  virtual void enterParenthesis(AslParser::ParenthesisContext *ctx) = 0;
+  virtual void exitParenthesis(AslParser::ParenthesisContext *ctx) = 0;
 
   virtual void enterValue(AslParser::ValueContext *ctx) = 0;
   virtual void exitValue(AslParser::ValueContext *ctx) = 0;

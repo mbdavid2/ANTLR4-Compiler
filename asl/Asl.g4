@@ -39,7 +39,7 @@ program : function+ EOF
 // A function has a name, a list of parameters and a list of statements
 function
         : FUNC ID '(' (parameters)? ')' declarations statements ENDFUNC
-        | FUNC ID '(' (parameters)? ')' ':' type declarations statements RETURN expr ENDFUNC
+        | FUNC ID '(' (parameters)? ')' ':' type declarations statements RETURN expr ';' ENDFUNC
         ;     
 
 parameters
@@ -82,6 +82,7 @@ statement
         | WRITE expr ';'                      # writeExpr
           // Write a string
         | WRITE STRING ';'                    # writeString
+        | RETURN (expr)? ';'                     # returnExpr
         ;
 // Grammar for left expressions (l-values in C++)
 left_expr
@@ -90,17 +91,18 @@ left_expr
         ;
 
 // Grammar for expressions with boolean, relational and aritmetic operators
-expr    : expr (op=MUL|op=DIV | op=MOD) expr  # arithmetic
+expr    : (op=NOT | op=PLUS | op=MINUS) expr  # unary
+        | '(' expr ')'                        # parenthesis
+        | expr (op=MUL|op=DIV |op=MOD) expr   # arithmetic
         | expr (op=PLUS|op=MINUS) expr        # arithmetic
         | expr (op=EQUAL|op=NOTEQUAL|op=LESS|op=LESSEQ|op=BIGGER|op=BIGGEREQ) expr                  # relational
         | expr (op=AND|op=OR) expr            # binaryop
-        | BOOLEAN                             # boolean
+        | op=BOOLEAN                          # value
+        | op=CHARVAL                          # value
         | op=INTVAL                           # value
         | op=FLOATVAL                         # value
-        | op=CHARVAL						  # value 
         | ident                               # exprIdent
         | ident '[' expr ']'				  # arrayAccess
-        
         ;
 
 ident   : ID
@@ -129,6 +131,7 @@ INT       : 'int';
 FLOAT     : 'float';
 BOOL      : 'bool';
 CHAR      : 'char';
+NOT       : 'not';
 AND       : 'and';
 OR        : 'or';
 IF        : 'if' ;
@@ -145,13 +148,14 @@ WRITE     : 'write' ;
 ARRAY     : 'array';
 OF        : 'of';
 RETURN    : 'return';
+BOOLEAN   : TRUE | FALSE;
 TRUE      : 'true';
 FALSE     : 'false';
-BOOLEAN   : TRUE | FALSE;
-ID        : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
+CHARVAL	  : '\'' ( ESC_SEQ | ~('\\'|'"') ) '\'';
 INTVAL    : ('0'..'9')+ ;
 FLOATVAL  : (INTVAL '.' INTVAL);
-CHARVAL	  : ('a'..'z'|'A'..'Z');
+ID        : ('a'..'z'|'A'..'Z'|'_')('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
+
 
 
 

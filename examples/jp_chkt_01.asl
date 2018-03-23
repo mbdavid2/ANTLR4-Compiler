@@ -9,7 +9,7 @@ func main()
   m = -n*5 - (m-1);
   b = n+m >= i or not b and f+1 or n<2;
   n = n > 3 - - 5;
-  f = n*n - 1.9 - b;
+  f = n*n - true;
   f = f/2;
   b = b or not q;
   b = 45;
