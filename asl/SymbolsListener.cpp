@@ -117,6 +117,26 @@ void SymbolsListener::exitVariable_decl(AslParser::Variable_declContext *ctx) {
   DEBUG_EXIT();
 }
 
+void SymbolsListener::enterParameters(AslParser::ParametersContext *ctx) {
+  DEBUG_ENTER();
+}
+void SymbolsListener::exitParameters(AslParser::ParametersContext *ctx) {
+  for(auto eCtx : ctx -> ID()){
+    std::string ident = eCtx -> getText();
+    if (Symbols.findInCurrentScope(ident)) {
+        Errors.declaredIdent(eCtx);
+    }
+    else {
+        //TODO: esto no estoy seguro de si es correcto, hago ctx -> getIndex
+        //para obtener el indice del parametro que estamos "observando" y entonces 
+        //coger su tipo
+        TypesMgr::TypeId t1 = getTypeDecor(ctx->type(ctx -> getRuleIndex()));
+        Symbols.addLocalVar(ident, t1);
+    }
+  }
+  DEBUG_EXIT();
+}
+
 void SymbolsListener::enterType(AslParser::TypeContext *ctx) {
   DEBUG_ENTER();
 }

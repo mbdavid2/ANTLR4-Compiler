@@ -69,6 +69,9 @@ public:
   void enterVariable_decl(AslParser::Variable_declContext *ctx);
   void exitVariable_decl(AslParser::Variable_declContext *ctx);
 
+  void enterParameters(AslParser::ParametersContext *ctx);
+  void exitParameters(AslParser::ParametersContext *ctx);
+
   void enterType(AslParser::TypeContext *ctx);
   void exitType(AslParser::TypeContext *ctx);
 
