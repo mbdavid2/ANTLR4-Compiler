@@ -25,7 +25,7 @@ public:
   enum {
     RuleProgram = 0, RuleFunction = 1, RuleParameters = 2, RuleDeclarations = 3, 
     RuleVariable_decl = 4, RuleType = 5, RuleStatements = 6, RuleStatement = 7, 
-    RuleLeft_expr = 8, RuleExpr = 9, RuleIdent = 10
+    RuleLeft_expr = 8, RuleExpr = 9, RuleIdent = 10, RuleArray_access = 11
   };
 
   AslParser(antlr4::TokenStream *input);
@@ -48,7 +48,8 @@ public:
   class StatementContext;
   class Left_exprContext;
   class ExprContext;
-  class IdentContext; 
+  class IdentContext;
+  class Array_accessContext; 
 
   class  ProgramContext : public antlr4::ParserRuleContext {
   public:
@@ -274,7 +275,7 @@ public:
     Left_exprContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     IdentContext *ident();
-    ExprContext *expr();
+    Array_accessContext *array_access();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -313,6 +314,7 @@ public:
   public:
     ExprIdentContext(ExprContext *ctx);
 
+    AslParser::IdentContext *op = nullptr;
     IdentContext *ident();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -364,16 +366,6 @@ public:
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
   };
 
-  class  ArrayAccessContext : public ExprContext {
-  public:
-    ArrayAccessContext(ExprContext *ctx);
-
-    IdentContext *ident();
-    ExprContext *expr();
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-  };
-
   class  ParenthesisContext : public ExprContext {
   public:
     ParenthesisContext(ExprContext *ctx);
@@ -396,6 +388,16 @@ public:
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
   };
 
+  class  ExprArrayAccessContext : public ExprContext {
+  public:
+    ExprArrayAccessContext(ExprContext *ctx);
+
+    AslParser::Array_accessContext *op = nullptr;
+    Array_accessContext *array_access();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+  };
+
   ExprContext* expr();
   ExprContext* expr(int precedence);
   class  IdentContext : public antlr4::ParserRuleContext {
@@ -410,6 +412,31 @@ public:
   };
 
   IdentContext* ident();
+
+  class  Array_accessContext : public antlr4::ParserRuleContext {
+  public:
+    Array_accessContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+   
+    Array_accessContext() : antlr4::ParserRuleContext() { }
+    void copyFrom(Array_accessContext *context);
+    using antlr4::ParserRuleContext::copyFrom;
+
+    virtual size_t getRuleIndex() const override;
+
+   
+  };
+
+  class  ArrayAccessContext : public Array_accessContext {
+  public:
+    ArrayAccessContext(Array_accessContext *ctx);
+
+    IdentContext *ident();
+    ExprContext *expr();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+  };
+
+  Array_accessContext* array_access();
 
 
   virtual bool sempred(antlr4::RuleContext *_localctx, size_t ruleIndex, size_t predicateIndex) override;

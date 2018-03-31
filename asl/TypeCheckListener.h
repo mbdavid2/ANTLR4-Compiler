@@ -116,8 +116,15 @@ public:
   void enterExprIdent(AslParser::ExprIdentContext *ctx);
   void exitExprIdent(AslParser::ExprIdentContext *ctx);
 
+  void enterExprArrayAccess(AslParser::ExprArrayAccessContext *ctx);
+  void exitExprArrayAccess(AslParser::ExprArrayAccessContext *ctx);
+
   void enterIdent(AslParser::IdentContext *ctx);
   void exitIdent(AslParser::IdentContext *ctx);
+
+  void enterArrayAccess(AslParser::ArrayAccessContext *ctx);
+  void exitArrayAccess(AslParser::ArrayAccessContext *ctx);
+
 
   // void enterEveryRule(antlr4::ParserRuleContext *ctx);
   // void exitEveryRule(antlr4::ParserRuleContext *ctx);

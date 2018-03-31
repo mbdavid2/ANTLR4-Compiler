@@ -192,6 +192,8 @@ void TypeCheckListener::enterLeft_expr(AslParser::Left_exprContext *ctx) {
   DEBUG_ENTER();
 }
 void TypeCheckListener::exitLeft_expr(AslParser::Left_exprContext *ctx) {
+  //if (ctx->ident()) std::cout << "Left Expr Ident" << std::endl;
+  //if (ctx->array_access()) std::cout << "Left Expr Array" << std::endl;
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
   putTypeDecor(ctx, t1);
   bool b = getIsLValueDecor(ctx->ident());
@@ -274,6 +276,42 @@ void TypeCheckListener::exitExprIdent(AslParser::ExprIdentContext *ctx) {
   putTypeDecor(ctx, t1);
   bool b = getIsLValueDecor(ctx->ident());
   putIsLValueDecor(ctx, b);
+  DEBUG_EXIT();
+}
+
+void TypeCheckListener::enterExprArrayAccess(AslParser::ExprArrayAccessContext *ctx) {
+  DEBUG_ENTER();
+}
+void TypeCheckListener::exitExprArrayAccess(AslParser::ExprArrayAccessContext *ctx) {
+  //TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
+  //Types.dump(t1);
+  //Errors.incompatibleOperator(ctx->ident());
+  DEBUG_EXIT();
+}
+
+void TypeCheckListener::enterArrayAccess(AslParser::ArrayAccessContext *ctx) {
+  DEBUG_ENTER();
+}
+void TypeCheckListener::exitArrayAccess(AslParser::ArrayAccessContext *ctx) {
+  //General Array Access (left_expr and expr have specific functions, but this one is for checking
+  //that we're accessing an array type)
+
+  //Check ident
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
+
+  if (not Types.isArrayTy(t1)) Errors.nonArrayInArrayAccess(ctx->ident());
+  else {
+    //TypesMgr::TypeId t = Types.createArrayTy();
+    putTypeDecor(ctx, t1);
+    //putIsLValueDecor(ctx, false);
+  }
+
+  //Check if the index is valid
+  TypesMgr::TypeId t2 = getTypeDecor(ctx->expr());
+
+  if (not Types.isIntegerTy(t2)) Errors.nonIntegerIndexInArrayAccess(ctx->expr());
+  else {}
+
   DEBUG_EXIT();
 }
 

@@ -79,17 +79,20 @@ public:
   virtual void enterUnary(AslParser::UnaryContext * /*ctx*/) override { }
   virtual void exitUnary(AslParser::UnaryContext * /*ctx*/) override { }
 
-  virtual void enterArrayAccess(AslParser::ArrayAccessContext * /*ctx*/) override { }
-  virtual void exitArrayAccess(AslParser::ArrayAccessContext * /*ctx*/) override { }
-
   virtual void enterParenthesis(AslParser::ParenthesisContext * /*ctx*/) override { }
   virtual void exitParenthesis(AslParser::ParenthesisContext * /*ctx*/) override { }
 
   virtual void enterValue(AslParser::ValueContext * /*ctx*/) override { }
   virtual void exitValue(AslParser::ValueContext * /*ctx*/) override { }
 
+  virtual void enterExprArrayAccess(AslParser::ExprArrayAccessContext * /*ctx*/) override { }
+  virtual void exitExprArrayAccess(AslParser::ExprArrayAccessContext * /*ctx*/) override { }
+
   virtual void enterIdent(AslParser::IdentContext * /*ctx*/) override { }
   virtual void exitIdent(AslParser::IdentContext * /*ctx*/) override { }
+
+  virtual void enterArrayAccess(AslParser::ArrayAccessContext * /*ctx*/) override { }
+  virtual void exitArrayAccess(AslParser::ArrayAccessContext * /*ctx*/) override { }
 
 
   virtual void enterEveryRule(antlr4::ParserRuleContext * /*ctx*/) override { }

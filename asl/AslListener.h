@@ -77,17 +77,20 @@ public:
   virtual void enterUnary(AslParser::UnaryContext *ctx) = 0;
   virtual void exitUnary(AslParser::UnaryContext *ctx) = 0;
 
-  virtual void enterArrayAccess(AslParser::ArrayAccessContext *ctx) = 0;
-  virtual void exitArrayAccess(AslParser::ArrayAccessContext *ctx) = 0;
-
   virtual void enterParenthesis(AslParser::ParenthesisContext *ctx) = 0;
   virtual void exitParenthesis(AslParser::ParenthesisContext *ctx) = 0;
 
   virtual void enterValue(AslParser::ValueContext *ctx) = 0;
   virtual void exitValue(AslParser::ValueContext *ctx) = 0;
 
+  virtual void enterExprArrayAccess(AslParser::ExprArrayAccessContext *ctx) = 0;
+  virtual void exitExprArrayAccess(AslParser::ExprArrayAccessContext *ctx) = 0;
+
   virtual void enterIdent(AslParser::IdentContext *ctx) = 0;
   virtual void exitIdent(AslParser::IdentContext *ctx) = 0;
+
+  virtual void enterArrayAccess(AslParser::ArrayAccessContext *ctx) = 0;
+  virtual void exitArrayAccess(AslParser::ArrayAccessContext *ctx) = 0;
 
 
 };

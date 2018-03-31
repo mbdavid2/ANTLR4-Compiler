@@ -85,9 +85,9 @@ statement
         | RETURN (expr)? ';'                     # returnExpr
         ;
 // Grammar for left expressions (l-values in C++)
-left_expr
-        : ident
-        | ident '[' expr ']'
+left_expr   
+        : ident                               
+        | array_access                  
         ;
 
 // Grammar for expressions with boolean, relational and aritmetic operators
@@ -101,11 +101,15 @@ expr    : (op=NOT | op=PLUS | op=MINUS) expr  # unary
         | op=CHARVAL                          # value
         | op=INTVAL                           # value
         | op=FLOATVAL                         # value
-        | ident                               # exprIdent
-        | ident '[' expr ']'				  # arrayAccess
+        | op=ident                            # exprIdent
+        | op=array_access                     # exprArrayAccess
         ;
 
 ident   : ID
+        ;
+
+array_access 
+        : ident '[' expr ']'                 # arrayAccess
         ;
         
         
