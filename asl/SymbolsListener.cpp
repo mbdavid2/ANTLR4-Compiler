@@ -86,7 +86,8 @@ void SymbolsListener::exitFunction(AslParser::FunctionContext *ctx) {
   }
   else {
     std::vector<TypesMgr::TypeId> lParamsTy;
-    TypesMgr::TypeId tRet = Types.createVoidTy();
+    TypesMgr::TypeId tRet = getTypeDecor(ctx->type());
+    if (Types.isErrorTy(tRet)) tRet = Types.createVoidTy(); //Si no tiene tipo, es void
     TypesMgr::TypeId tFunc = Types.createFunctionTy(lParamsTy, tRet);
     Symbols.addFunction(ident, tFunc);
   }

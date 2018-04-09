@@ -4,5 +4,6 @@ endfunc
 
 func g(a:bool)
   var b:int
-  b = f1() or b > 4;
+  b = f1();
+  //b = f1() or b > 4;
 endfunc

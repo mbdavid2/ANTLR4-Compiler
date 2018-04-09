@@ -125,6 +125,12 @@ public:
   void enterArrayAccess(AslParser::ArrayAccessContext *ctx);
   void exitArrayAccess(AslParser::ArrayAccessContext *ctx);
 
+  void enterExprFuncCall(AslParser::ExprFuncCallContext *ctx);
+  void exitExprFuncCall(AslParser::ExprFuncCallContext *ctx);
+
+  /*void enterFuncCall(AslParser::FuncCallContext *ctx);
+  void exitFuncCall(AslParser::FuncCallContext *ctx);*/
+
 
   // void enterEveryRule(antlr4::ParserRuleContext *ctx);
   // void exitEveryRule(antlr4::ParserRuleContext *ctx);

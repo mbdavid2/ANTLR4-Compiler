@@ -200,6 +200,8 @@ public:
     ProcCallContext(StatementContext *ctx);
 
     IdentContext *ident();
+    std::vector<ExprContext *> expr();
+    ExprContext* expr(size_t i);
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
   };
@@ -417,8 +419,9 @@ public:
   public:
     ExprFuncCallContext(ExprContext *ctx);
 
-    AslParser::FuncCallContext *op = nullptr;
-    FuncCallContext *funcCall();
+    IdentContext *ident();
+    std::vector<ExprContext *> expr();
+    ExprContext* expr(size_t i);
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
   };

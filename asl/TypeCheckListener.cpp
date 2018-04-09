@@ -43,7 +43,7 @@
 // #define DEBUG_BUILD
 #include "../common/debug.h"
 
-// using namespace std;
+using namespace std;
 
 
 // Constructor
@@ -115,7 +115,8 @@ void TypeCheckListener::enterAssignStmt(AslParser::AssignStmtContext *ctx) {
 void TypeCheckListener::exitAssignStmt(AslParser::AssignStmtContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->left_expr());
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr());
-  //Types.dump(t1);Types.dump(t2);
+  cout << endl << "assignment:      ";
+  Types.dump(t1);Types.dump(t2);
   if ((not Types.isErrorTy(t1)) and (not Types.isErrorTy(t2)) and
       (not Types.copyableTypes(t1, t2)))
     Errors.incompatibleAssignment(ctx->ASSIGN());
@@ -152,6 +153,7 @@ void TypeCheckListener::enterProcCall(AslParser::ProcCallContext *ctx) {
 }
 void TypeCheckListener::exitProcCall(AslParser::ProcCallContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
+  //Types.dump(t1);
   if (not Types.isFunctionTy(t1) and not Types.isErrorTy(t1)) {
     Errors.isNotCallable(ctx->ident());
   }
@@ -227,6 +229,8 @@ void TypeCheckListener::enterBinaryop(AslParser::BinaryopContext *ctx) {
 void TypeCheckListener::exitBinaryop(AslParser::BinaryopContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
+  cout << endl << "binaryop:          ";
+  Types.dump(t1); Types.dump(t2);
   if (((not Types.isErrorTy(t1)) and (not Types.isBooleanTy(t1))) or
       ((not Types.isErrorTy(t2)) and (not Types.isBooleanTy(t2))))
     Errors.incompatibleOperator(ctx->op);
@@ -330,6 +334,21 @@ void TypeCheckListener::exitIdent(AslParser::IdentContext *ctx) {
       putIsLValueDecor(ctx, false);
     else
       putIsLValueDecor(ctx, true);
+  }
+  DEBUG_EXIT();
+}
+
+///////FUNC CALL////////
+void TypeCheckListener::enterExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
+  DEBUG_ENTER();
+}
+void TypeCheckListener::exitExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
+  cout << endl << "exitExprFuncCall:   ";
+  Types.dump(t1);
+  //TODO: comprovaciones de parametros y tal?
+  if (not Types.isFunctionTy(t1) and not Types.isErrorTy(t1)) {
+    Errors.isNotCallable(ctx->ident());
   }
   DEBUG_EXIT();
 }

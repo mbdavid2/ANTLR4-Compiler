@@ -78,15 +78,16 @@ statement
           // if-then-else statement (else is optional)
         | IF expr THEN statements (ELSE statements)?  ENDIF       # ifStmt
           // A function/procedure call has a list of arguments in parenthesis (possibly empty)
-        | ident '(' ')' ';'                   # procCall
+        | ident '(' ((expr) (',' expr)*)? ')' ';'   # procCall
           // Read a variable
         | READ left_expr ';'                  # readStmt
           // Write an expression
         | WRITE expr ';'                      # writeExpr
           // Write a string
         | WRITE STRING ';'                    # writeString
-        | RETURN (expr)? ';'                     # returnExpr
+        | RETURN (expr)? ';'                  # returnExpr
         ;
+
 // Grammar for left expressions (l-values in C++)
 left_expr   
         : ident                               
@@ -106,7 +107,7 @@ expr    : (op=NOT | op=PLUS | op=MINUS) expr  # unary
         | op=FLOATVAL                         # value
         | op=ident                            # exprIdent
         | op=array_access                     # exprArrayAccess
-        | op=funcCall                         # exprFuncCall
+        | ident '(' ((expr) (',' expr)*)? ')'   # exprFuncCall
         ;
 
 funcCall: 
