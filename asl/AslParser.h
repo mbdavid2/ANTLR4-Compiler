@@ -24,8 +24,9 @@ public:
 
   enum {
     RuleProgram = 0, RuleFunction = 1, RuleParameters = 2, RuleDeclarations = 3, 
-    RuleVariable_decl = 4, RuleType = 5, RuleStatements = 6, RuleStatement = 7, 
-    RuleLeft_expr = 8, RuleExpr = 9, RuleIdent = 10, RuleArray_access = 11
+    RuleVariable_decl = 4, RuleType = 5, RuleType_basic = 6, RuleStatements = 7, 
+    RuleStatement = 8, RuleLeft_expr = 9, RuleExpr = 10, RuleFuncCall = 11, 
+    RuleIdent = 12, RuleArray_access = 13
   };
 
   AslParser(antlr4::TokenStream *input);
@@ -44,10 +45,12 @@ public:
   class DeclarationsContext;
   class Variable_declContext;
   class TypeContext;
+  class Type_basicContext;
   class StatementsContext;
   class StatementContext;
   class Left_exprContext;
   class ExprContext;
+  class FuncCallContext;
   class IdentContext;
   class Array_accessContext; 
 
@@ -137,10 +140,22 @@ public:
   public:
     TypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    Type_basicContext *type_basic();
     antlr4::tree::TerminalNode *ARRAY();
     antlr4::tree::TerminalNode *INTVAL();
     antlr4::tree::TerminalNode *OF();
-    TypeContext *type();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+   
+  };
+
+  TypeContext* type();
+
+  class  Type_basicContext : public antlr4::ParserRuleContext {
+  public:
+    Type_basicContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *INT();
     antlr4::tree::TerminalNode *FLOAT();
     antlr4::tree::TerminalNode *BOOL();
@@ -151,7 +166,7 @@ public:
    
   };
 
-  TypeContext* type();
+  Type_basicContext* type_basic();
 
   class  StatementsContext : public antlr4::ParserRuleContext {
   public:
@@ -398,8 +413,33 @@ public:
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
   };
 
+  class  ExprFuncCallContext : public ExprContext {
+  public:
+    ExprFuncCallContext(ExprContext *ctx);
+
+    AslParser::FuncCallContext *op = nullptr;
+    FuncCallContext *funcCall();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+  };
+
   ExprContext* expr();
   ExprContext* expr(int precedence);
+  class  FuncCallContext : public antlr4::ParserRuleContext {
+  public:
+    FuncCallContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *ID();
+    std::vector<ExprContext *> expr();
+    ExprContext* expr(size_t i);
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+   
+  };
+
+  FuncCallContext* funcCall();
+
   class  IdentContext : public antlr4::ParserRuleContext {
   public:
     IdentContext(antlr4::ParserRuleContext *parent, size_t invokingState);

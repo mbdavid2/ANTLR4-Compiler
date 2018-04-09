@@ -283,9 +283,8 @@ void TypeCheckListener::enterExprArrayAccess(AslParser::ExprArrayAccessContext *
   DEBUG_ENTER();
 }
 void TypeCheckListener::exitExprArrayAccess(AslParser::ExprArrayAccessContext *ctx) {
-  //TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
-  //Types.dump(t1);
-  //Errors.incompatibleOperator(ctx->ident());
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->array_access());
+  putTypeDecor(ctx, t1);  
   DEBUG_EXIT();
 }
 
@@ -298,19 +297,17 @@ void TypeCheckListener::exitArrayAccess(AslParser::ArrayAccessContext *ctx) {
 
   //Check ident
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
-
+  //Types.dump(t1);
   if (not Types.isArrayTy(t1)) Errors.nonArrayInArrayAccess(ctx->ident());
   else {
-    //TypesMgr::TypeId t = Types.createArrayTy();
-    putTypeDecor(ctx, t1);
-    //putIsLValueDecor(ctx, false);
+    TypesMgr::TypeId elemType = Types.getArrayElemType(t1);
+    putTypeDecor(ctx, elemType);  
   }
 
   //Check if the index is valid
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr());
 
   if (not Types.isIntegerTy(t2)) Errors.nonIntegerIndexInArrayAccess(ctx->expr());
-  else {}
 
   DEBUG_EXIT();
 }

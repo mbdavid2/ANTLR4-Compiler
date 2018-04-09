@@ -54,14 +54,17 @@ variable_decl
         : VAR ID (',' ID )* ':' type
         ;
 
-type    : ARRAY '[' INTVAL ']' OF type
-        | INT
+type    : type_basic
+        | ARRAY '[' INTVAL ']' OF type_basic
+        ;
+        
+type_basic
+        : INT
         | FLOAT
         | BOOL
         | CHAR
-        
         ;
-
+        
 statements
         : (statement)*
         ;
@@ -103,8 +106,13 @@ expr    : (op=NOT | op=PLUS | op=MINUS) expr  # unary
         | op=FLOATVAL                         # value
         | op=ident                            # exprIdent
         | op=array_access                     # exprArrayAccess
+        | op=funcCall                         # exprFuncCall
         ;
 
+funcCall: 
+        | ID '(' ((expr) (',' expr)*)? ')'
+        ;
+        
 ident   : ID
         ;
 
