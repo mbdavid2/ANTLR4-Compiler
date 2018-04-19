@@ -90,6 +90,9 @@ public:
   void enterProcCall(AslParser::ProcCallContext *ctx);
   void exitProcCall(AslParser::ProcCallContext *ctx);
 
+  void enterExprFuncCall(AslParser::ExprFuncCallContext *ctx);
+  void exitExprFuncCall(AslParser::ExprFuncCallContext * ctx);
+
   void enterReadStmt(AslParser::ReadStmtContext *ctx);
   void exitReadStmt(AslParser::ReadStmtContext *ctx);
 

@@ -115,11 +115,16 @@ void TypeCheckListener::enterAssignStmt(AslParser::AssignStmtContext *ctx) {
 void TypeCheckListener::exitAssignStmt(AslParser::AssignStmtContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->left_expr());
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr());
-  cout << endl << "assignment:      ";
-  Types.dump(t1);Types.dump(t2);
+  /*cout << endl << "assignment:      ";
+  Types.dump(t1); cout << "  =  ";Types.dump(t2); cout << endl;*/
+  if (Types.isFunctionTy(t2)) {
+    t2 = Types.getFuncReturnType(t2);
+  }
   if ((not Types.isErrorTy(t1)) and (not Types.isErrorTy(t2)) and
-      (not Types.copyableTypes(t1, t2)))
-    Errors.incompatibleAssignment(ctx->ASSIGN());
+      not (Types.copyableTypes(t1, t2))) {
+      //Si realmente hay dos tipos (no se vale error) y son incompatibles
+      Errors.incompatibleAssignment(ctx->ASSIGN());
+  }
   if ((not Types.isErrorTy(t1)) and (not getIsLValueDecor(ctx->left_expr())))
     Errors.nonReferenceableLeftExpr(ctx->left_expr());
   DEBUG_EXIT();
@@ -229,8 +234,13 @@ void TypeCheckListener::enterBinaryop(AslParser::BinaryopContext *ctx) {
 void TypeCheckListener::exitBinaryop(AslParser::BinaryopContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
-  cout << endl << "binaryop:          ";
-  Types.dump(t1); Types.dump(t2);
+
+  if (Types.isFunctionTy(t1)) t1 = Types.getFuncReturnType(t1);
+  if (Types.isFunctionTy(t2)) t2 = Types.getFuncReturnType(t2);
+
+  /*cout << endl << "binaryop:          ";
+  Types.dump(t1); cout << "   op   "; Types.dump(t2);cout << endl;*/
+
   if (((not Types.isErrorTy(t1)) and (not Types.isBooleanTy(t1))) or
       ((not Types.isErrorTy(t2)) and (not Types.isBooleanTy(t2))))
     Errors.incompatibleOperator(ctx->op);
@@ -344,8 +354,9 @@ void TypeCheckListener::enterExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
 }
 void TypeCheckListener::exitExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
-  cout << endl << "exitExprFuncCall:   ";
+  /*cout << endl << "exitExprFuncCall:   ";
   Types.dump(t1);
+  cout << endl;*/
   //TODO: comprovaciones de parametros y tal?
   if (not Types.isFunctionTy(t1) and not Types.isErrorTy(t1)) {
     Errors.isNotCallable(ctx->ident());
