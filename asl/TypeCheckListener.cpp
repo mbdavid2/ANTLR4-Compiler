@@ -78,6 +78,32 @@ void TypeCheckListener::enterFunction(AslParser::FunctionContext *ctx) {
 }
 void TypeCheckListener::exitFunction(AslParser::FunctionContext *ctx) {
   Symbols.popScope();
+  TypesMgr::TypeId t1;
+  TypesMgr::TypeId t2;
+  if (ctx->expr() != NULL) {
+      t1 = getTypeDecor(ctx->expr()); 
+      t2 = getTypeDecor(ctx->type()); 
+    
+    if (not Types.copyableTypes(t2, t1)) Errors.incompatibleReturn(ctx);
+  }
+  DEBUG_EXIT();
+}
+
+void TypeCheckListener::enterReturnExpr(AslParser::ReturnExprContext *ctx){
+    
+  DEBUG_ENTER();
+}
+
+void TypeCheckListener::exitReturnExpr(AslParser::ReturnExprContext *ctx){
+  TypesMgr::TypeId t1;
+  if (ctx->expr() != NULL) t1 = getTypeDecor(ctx->expr());
+  else t1 = Types.createVoidTy();  
+
+  TypesMgr::TypeId tFunc = Symbols.getCurrentFunctionTy();
+  TypesMgr::TypeId tRet = Types.getFuncReturnType(tFunc);
+  
+  if (not Types.copyableTypes(tRet, t1)) Errors.incompatibleReturn(ctx);
+
   DEBUG_EXIT();
 }
 
@@ -120,6 +146,7 @@ void TypeCheckListener::exitAssignStmt(AslParser::AssignStmtContext *ctx) {
   if (Types.isFunctionTy(t2)) {
     t2 = Types.getFuncReturnType(t2);
   }
+  //Types.dump(t1); cout << "  =  ";Types.dump(t2); cout << endl;
   if ((not Types.isErrorTy(t1)) and (not Types.isErrorTy(t2)) and
       not (Types.copyableTypes(t1, t2))) {
       //Si realmente hay dos tipos (no se vale error) y son incompatibles
@@ -150,18 +177,6 @@ void TypeCheckListener::exitWhileStmt(AslParser::WhileStmtContext *ctx) {
 
   if ((not Types.isErrorTy(t1)) and (not Types.isBooleanTy(t1)))
     Errors.booleanRequired(ctx);
-  DEBUG_EXIT();
-}
-
-void TypeCheckListener::enterProcCall(AslParser::ProcCallContext *ctx) {
-  DEBUG_ENTER();
-}
-void TypeCheckListener::exitProcCall(AslParser::ProcCallContext *ctx) {
-  TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
-  //Types.dump(t1);
-  if (not Types.isFunctionTy(t1) and not Types.isErrorTy(t1)) {
-    Errors.isNotCallable(ctx->ident());
-  }
   DEBUG_EXIT();
 }
 
@@ -312,10 +327,13 @@ void TypeCheckListener::exitArrayAccess(AslParser::ArrayAccessContext *ctx) {
   //Check ident
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
   //Types.dump(t1);
-  if (not Types.isArrayTy(t1)) Errors.nonArrayInArrayAccess(ctx->ident());
-  else {
-    TypesMgr::TypeId elemType = Types.getArrayElemType(t1);
-    putTypeDecor(ctx, elemType);  
+  if (not Types.isErrorTy(t1)) {
+    if (not Types.isArrayTy(t1)) 
+        Errors.nonArrayInArrayAccess(ctx->ident());
+    else {
+        TypesMgr::TypeId elemType = Types.getArrayElemType(t1);
+        putTypeDecor(ctx, elemType);  
+    }
   }
 
   //Check if the index is valid
@@ -349,17 +367,53 @@ void TypeCheckListener::exitIdent(AslParser::IdentContext *ctx) {
 }
 
 ///////FUNC CALL////////
+//TODO: comprovaciones de parametros y tal?
+
+void TypeCheckListener::enterProcCall(AslParser::ProcCallContext *ctx) {
+  DEBUG_ENTER();
+}
+void TypeCheckListener::exitProcCall(AslParser::ProcCallContext *ctx) {
+  //Symbols.popScope();
+  std::string ident = ctx->ident()->ID()->getText();
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
+  if (not Types.isFunctionTy(t1) and not Types.isErrorTy(t1)) {
+    Errors.isNotCallable(ctx->ident());
+  }
+  else {
+    std::vector<TypesMgr::TypeId> lParamsTy;
+    TypesMgr::TypeId tRet = Symbols.getType(ident);
+    if (Types.isErrorTy(tRet)) tRet = Types.createVoidTy(); //Si no tiene tipo, es void
+    if (Types.isErrorTy(tRet)) tRet = Types.createVoidTy(); //Si no tiene tipo, es void
+    putTypeDecor(ctx, tRet);
+  }
+  DEBUG_EXIT();
+}
+
 void TypeCheckListener::enterExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
   DEBUG_ENTER();
 }
 void TypeCheckListener::exitExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
+  //Symbols.popScope();
+  std::string ident = ctx->ident()->ID()->getText();
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
-  /*cout << endl << "exitExprFuncCall:   ";
-  Types.dump(t1);
-  cout << endl;*/
-  //TODO: comprovaciones de parametros y tal?
   if (not Types.isFunctionTy(t1) and not Types.isErrorTy(t1)) {
     Errors.isNotCallable(ctx->ident());
+  }
+  else {
+    std::vector<TypesMgr::TypeId> lParamsTy = Types.getFuncParamsTypes(t1); //TODO: feed me pls
+    int i = 0;
+    for(auto eCtx : ctx -> expr()){
+        TypesMgr::TypeId tExp = getTypeDecor(eCtx);
+        if (not Types.copyableTypes(lParamsTy[i], tExp)) Errors.incompatibleParameter(eCtx, i+1, ctx);
+        i++;
+    }
+    TypesMgr::TypeId tRet = Types.getFuncReturnType(t1);
+    if (Types.isVoidTy(tRet)) {
+        Errors.isNotFunction(ctx);
+        tRet = Types.createErrorTy();   
+    }
+    //if (Types.isErrorTy(tRet)) tRet = Types.createVoidTy(); //Si no tiene tipo, es void
+    putTypeDecor(ctx, tRet);
   }
   DEBUG_EXIT();
 }

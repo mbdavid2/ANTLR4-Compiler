@@ -1,0 +1,6 @@
+Line 3:2 error: Array access to a non array operand.
+Line 4:6 error: Array access to a non array operand.
+Line 5:6 error: Array access to a non array operand.
+Line 5:8 error: Array access witn non integer index.
+Line 6:2 error: Array access to a non array operand.
+Line 6:4 error: Array access witn non integer index.

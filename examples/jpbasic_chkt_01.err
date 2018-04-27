@@ -1,0 +1,5 @@
+Line 5:7 error: Assignment with incompatible types.
+Line 11:4 error: Instruction 'if' requires a boolean condition.
+Line 12:11 error: Assignment with incompatible types.
+Line 13:23 error: Identifier 'y1' is undeclared.
+Line 15:18 error: Identifier 'z1' is undeclared.

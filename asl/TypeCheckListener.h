@@ -128,6 +128,9 @@ public:
   void enterExprFuncCall(AslParser::ExprFuncCallContext *ctx);
   void exitExprFuncCall(AslParser::ExprFuncCallContext *ctx);
 
+    void enterReturnExpr(AslParser::ReturnExprContext *ctx);
+  void exitReturnExpr(AslParser::ReturnExprContext *ctx);
+
   /*void enterFuncCall(AslParser::FuncCallContext *ctx);
   void exitFuncCall(AslParser::FuncCallContext *ctx);*/
 

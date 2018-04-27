@@ -1,0 +1,5 @@
+Line 3:13 error: Operator 'or' with incompatible types.
+Line 3:11 error: Parameter #2 with incompatible types in call to 'f'.
+Line 5:14 error: Parameter #3 with incompatible types in call to 'f'.
+Line 18:6 error: Array access to a non array operand.
+Line 18:8 error: Array access witn non integer index.
