@@ -80,17 +80,16 @@ void TypeCheckListener::exitFunction(AslParser::FunctionContext *ctx) {
   Symbols.popScope();
   TypesMgr::TypeId t1;
   TypesMgr::TypeId t2;
+
   if (ctx->expr() != NULL) {
       t1 = getTypeDecor(ctx->expr()); 
       t2 = getTypeDecor(ctx->type()); 
-    
     if (not Types.copyableTypes(t2, t1)) Errors.incompatibleReturn(ctx);
   }
   DEBUG_EXIT();
 }
 
 void TypeCheckListener::enterReturnExpr(AslParser::ReturnExprContext *ctx){
-    
   DEBUG_ENTER();
 }
 
@@ -143,6 +142,7 @@ void TypeCheckListener::exitAssignStmt(AslParser::AssignStmtContext *ctx) {
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr());
   /*cout << endl << "assignment:      ";
   Types.dump(t1); cout << "  =  ";Types.dump(t2); cout << endl;*/
+
   if (Types.isFunctionTy(t2)) {
     t2 = Types.getFuncReturnType(t2);
   }
@@ -373,18 +373,34 @@ void TypeCheckListener::enterProcCall(AslParser::ProcCallContext *ctx) {
   DEBUG_ENTER();
 }
 void TypeCheckListener::exitProcCall(AslParser::ProcCallContext *ctx) {
-  //Symbols.popScope();
+    //Symbols.popScope();
   std::string ident = ctx->ident()->ID()->getText();
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
-  if (not Types.isFunctionTy(t1) and not Types.isErrorTy(t1)) {
-    Errors.isNotCallable(ctx->ident());
-  }
-  else {
-    std::vector<TypesMgr::TypeId> lParamsTy;
-    TypesMgr::TypeId tRet = Symbols.getType(ident);
-    if (Types.isErrorTy(tRet)) tRet = Types.createVoidTy(); //Si no tiene tipo, es void
-    if (Types.isErrorTy(tRet)) tRet = Types.createVoidTy(); //Si no tiene tipo, es void
-    putTypeDecor(ctx, tRet);
+  if (not Types.isErrorTy(t1)) {
+	  if (not Types.isFunctionTy(t1)) {
+	    Errors.isNotCallable(ctx->ident());
+	  }
+	  else {
+	  	TypesMgr::TypeId tRet = Types.getFuncReturnType(t1);
+	    std::vector<TypesMgr::TypeId> lParamsTy = Types.getFuncParamsTypes(t1); //TODO: feed me pls
+	    int i = 0;
+	    for(auto eCtx : ctx -> expr()) i++;
+	    if (i != lParamsTy.size()) Errors.numberOfParameters(ctx);
+		else {
+			i = 0;
+		    //cout << "Func name: " << ident << endl;
+		    for(auto eCtx : ctx -> expr()){
+		    	//cout << "Iter: " << i << " size:  " << lParamsTy.size() << endl;
+		        TypesMgr::TypeId tExp = getTypeDecor(eCtx);
+		        if (not Types.copyableTypes(lParamsTy[i], tExp)) {
+		        	Errors.incompatibleParameter(eCtx, i+1, ctx);
+		        	//tRet = Types.createErrorTy();
+		        }
+		        i++;
+		    }
+	    }
+	    putTypeDecor(ctx, tRet);
+	  }
   }
   DEBUG_EXIT();
 }
@@ -393,27 +409,37 @@ void TypeCheckListener::enterExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
   DEBUG_ENTER();
 }
 void TypeCheckListener::exitExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
-  //Symbols.popScope();
   std::string ident = ctx->ident()->ID()->getText();
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
-  if (not Types.isFunctionTy(t1) and not Types.isErrorTy(t1)) {
-    Errors.isNotCallable(ctx->ident());
-  }
-  else {
-    std::vector<TypesMgr::TypeId> lParamsTy = Types.getFuncParamsTypes(t1); //TODO: feed me pls
-    int i = 0;
-    for(auto eCtx : ctx -> expr()){
-        TypesMgr::TypeId tExp = getTypeDecor(eCtx);
-        if (not Types.copyableTypes(lParamsTy[i], tExp)) Errors.incompatibleParameter(eCtx, i+1, ctx);
-        i++;
-    }
-    TypesMgr::TypeId tRet = Types.getFuncReturnType(t1);
-    if (Types.isVoidTy(tRet)) {
-        Errors.isNotFunction(ctx);
-        tRet = Types.createErrorTy();   
-    }
-    //if (Types.isErrorTy(tRet)) tRet = Types.createVoidTy(); //Si no tiene tipo, es void
-    putTypeDecor(ctx, tRet);
+  if (not Types.isErrorTy(t1)) {
+	  if (not Types.isFunctionTy(t1)) {
+	    Errors.isNotCallable(ctx->ident());
+	  }
+	  else {
+	  	TypesMgr::TypeId tRet = Types.getFuncReturnType(t1);
+	    std::vector<TypesMgr::TypeId> lParamsTy = Types.getFuncParamsTypes(t1); //TODO: feed me pls
+	    int i = 0;
+	    for(auto eCtx : ctx -> expr()) i++;
+	    if (i != lParamsTy.size()) Errors.numberOfParameters(ctx);
+		else {
+			i = 0;
+		    //cout << "Func name: " << ident << endl;
+		    for(auto eCtx : ctx -> expr()){
+		    	//cout << "Iter: " << i << " size:  " << lParamsTy.size() << endl;
+		        TypesMgr::TypeId tExp = getTypeDecor(eCtx);
+		        if (not Types.copyableTypes(lParamsTy[i], tExp)) {
+		        	Errors.incompatibleParameter(eCtx, i+1, ctx);
+		        	//tRet = Types.createErrorTy();
+		        }
+		        i++;
+		    }
+	    }
+	    if (Types.isVoidTy(tRet)) {
+	        Errors.isNotFunction(ctx);
+	        tRet = Types.createErrorTy();   
+	    }
+	    putTypeDecor(ctx, tRet);
+	  }
   }
   DEBUG_EXIT();
 }
