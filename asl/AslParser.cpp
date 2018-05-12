@@ -520,8 +520,8 @@ AslParser::TypeContext* AslParser::type() {
     setState(101);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
-      case AslParser::INT:
       case AslParser::FLOAT:
+      case AslParser::INT:
       case AslParser::BOOL:
       case AslParser::CHAR: {
         enterOuterAlt(_localctx, 1);
@@ -613,8 +613,8 @@ AslParser::Type_basicContext* AslParser::type_basic() {
     setState(103);
     _la = _input->LA(1);
     if (!((((_la & ~ 0x3fULL) == 0) &&
-      ((1ULL << _la) & ((1ULL << AslParser::INT)
-      | (1ULL << AslParser::FLOAT)
+      ((1ULL << _la) & ((1ULL << AslParser::FLOAT)
+      | (1ULL << AslParser::INT)
       | (1ULL << AslParser::BOOL)
       | (1ULL << AslParser::CHAR))) != 0))) {
     _errHandler->recoverInline(this);
@@ -1014,9 +1014,9 @@ AslParser::StatementContext* AslParser::statement() {
         | (1ULL << AslParser::MINUS)
         | (1ULL << AslParser::NOT)
         | (1ULL << AslParser::BOOLEAN)
-        | (1ULL << AslParser::CHARVAL)
-        | (1ULL << AslParser::INTVAL)
         | (1ULL << AslParser::FLOATVAL)
+        | (1ULL << AslParser::INTVAL)
+        | (1ULL << AslParser::CHARVAL)
         | (1ULL << AslParser::ID))) != 0)) {
         setState(134);
         expr(0);
@@ -1091,9 +1091,9 @@ AslParser::StatementContext* AslParser::statement() {
         | (1ULL << AslParser::MINUS)
         | (1ULL << AslParser::NOT)
         | (1ULL << AslParser::BOOLEAN)
-        | (1ULL << AslParser::CHARVAL)
-        | (1ULL << AslParser::INTVAL)
         | (1ULL << AslParser::FLOATVAL)
+        | (1ULL << AslParser::INTVAL)
+        | (1ULL << AslParser::CHARVAL)
         | (1ULL << AslParser::ID))) != 0)) {
         setState(159);
         expr(0);
@@ -1599,9 +1599,9 @@ AslParser::ExprContext* AslParser::expr(int precedence) {
         | (1ULL << AslParser::MINUS)
         | (1ULL << AslParser::NOT)
         | (1ULL << AslParser::BOOLEAN)
-        | (1ULL << AslParser::CHARVAL)
-        | (1ULL << AslParser::INTVAL)
         | (1ULL << AslParser::FLOATVAL)
+        | (1ULL << AslParser::INTVAL)
+        | (1ULL << AslParser::CHARVAL)
         | (1ULL << AslParser::ID))) != 0)) {
         setState(188);
         expr(0);
@@ -1870,9 +1870,9 @@ AslParser::FuncCallContext* AslParser::funcCall() {
           | (1ULL << AslParser::MINUS)
           | (1ULL << AslParser::NOT)
           | (1ULL << AslParser::BOOLEAN)
-          | (1ULL << AslParser::CHARVAL)
-          | (1ULL << AslParser::INTVAL)
           | (1ULL << AslParser::FLOATVAL)
+          | (1ULL << AslParser::INTVAL)
+          | (1ULL << AslParser::CHARVAL)
           | (1ULL << AslParser::ID))) != 0)) {
           setState(239);
           expr(0);
@@ -2063,7 +2063,7 @@ std::vector<std::string> AslParser::_ruleNames = {
 std::vector<std::string> AslParser::_literalNames = {
   "", "'('", "')'", "':'", "';'", "','", "'['", "']'", "'='", "'=='", "'!='", 
   "'<'", "'<='", "'>'", "'>='", "'+'", "'-'", "'*'", "'/'", "'%'", "'var'", 
-  "'int'", "'float'", "'bool'", "'char'", "'not'", "'and'", "'or'", "'if'", 
+  "'float'", "'int'", "'bool'", "'char'", "'not'", "'and'", "'or'", "'if'", 
   "'then'", "'else'", "'endif'", "'while'", "'endwhile'", "'do'", "'func'", 
   "'endfunc'", "'read'", "'write'", "'array'", "'of'", "'return'", "", "'true'", 
   "'false'"
@@ -2072,10 +2072,10 @@ std::vector<std::string> AslParser::_literalNames = {
 std::vector<std::string> AslParser::_symbolicNames = {
   "", "", "", "", "", "", "", "", "ASSIGN", "EQUAL", "NOTEQUAL", "LESS", 
   "LESSEQ", "BIGGER", "BIGGEREQ", "PLUS", "MINUS", "MUL", "DIV", "MOD", 
-  "VAR", "INT", "FLOAT", "BOOL", "CHAR", "NOT", "AND", "OR", "IF", "THEN", 
+  "VAR", "FLOAT", "INT", "BOOL", "CHAR", "NOT", "AND", "OR", "IF", "THEN", 
   "ELSE", "ENDIF", "WHILE", "ENDWHILE", "DO", "FUNC", "ENDFUNC", "READ", 
-  "WRITE", "ARRAY", "OF", "RETURN", "BOOLEAN", "TRUE", "FALSE", "CHARVAL", 
-  "INTVAL", "FLOATVAL", "ID", "STRING", "COMMENT", "WS"
+  "WRITE", "ARRAY", "OF", "RETURN", "BOOLEAN", "TRUE", "FALSE", "FLOATVAL", 
+  "INTVAL", "CHARVAL", "ID", "STRING", "COMMENT", "WS"
 };
 
 dfa::Vocabulary AslParser::_vocabulary(_literalNames, _symbolicNames);
@@ -2227,8 +2227,8 @@ AslParser::Initializer::Initializer() {
     0x2, 0x2, 0x2, 0xb0, 0xb1, 0x3, 0x2, 0x2, 0x2, 0xb1, 0xcb, 0x5, 0x16, 
     0xc, 0xf, 0xb2, 0xb3, 0x7, 0x3, 0x2, 0x2, 0xb3, 0xb4, 0x5, 0x16, 0xc, 
     0x2, 0xb4, 0xb5, 0x7, 0x4, 0x2, 0x2, 0xb5, 0xcb, 0x3, 0x2, 0x2, 0x2, 
-    0xb6, 0xcb, 0x7, 0x2c, 0x2, 0x2, 0xb7, 0xcb, 0x7, 0x2f, 0x2, 0x2, 0xb8, 
-    0xcb, 0x7, 0x30, 0x2, 0x2, 0xb9, 0xcb, 0x7, 0x31, 0x2, 0x2, 0xba, 0xcb, 
+    0xb6, 0xcb, 0x7, 0x2c, 0x2, 0x2, 0xb7, 0xcb, 0x7, 0x31, 0x2, 0x2, 0xb8, 
+    0xcb, 0x7, 0x30, 0x2, 0x2, 0xb9, 0xcb, 0x7, 0x2f, 0x2, 0x2, 0xba, 0xcb, 
     0x5, 0x1a, 0xe, 0x2, 0xbb, 0xcb, 0x5, 0x1c, 0xf, 0x2, 0xbc, 0xbd, 0x5, 
     0x1a, 0xe, 0x2, 0xbd, 0xc6, 0x7, 0x3, 0x2, 0x2, 0xbe, 0xc3, 0x5, 0x16, 
     0xc, 0x2, 0xbf, 0xc0, 0x7, 0x7, 0x2, 0x2, 0xc0, 0xc2, 0x5, 0x16, 0xc, 

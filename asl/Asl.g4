@@ -97,7 +97,7 @@ left_expr
 // Grammar for expressions with boolean, relational and aritmetic operators
 expr    : (op=NOT | op=PLUS | op=MINUS) expr  # unary
         | '(' expr ')'                        # parenthesis
-        | expr (op=MUL|op=DIV |op=MOD) expr   # arithmetic
+        | expr (op=MUL| op=DIV |op=MOD) expr   # arithmetic
         | expr (op=PLUS|op=MINUS) expr        # arithmetic
         | expr (op=EQUAL|op=NOTEQUAL|op=LESS|op=LESSEQ|op=BIGGER|op=BIGGEREQ) expr                  # relational
         | expr (op=AND|op=OR) expr            # binaryop
@@ -140,8 +140,8 @@ MUL       : '*';
 DIV       : '/';
 MOD       : '%';
 VAR       : 'var';
-INT       : 'int';
 FLOAT     : 'float';
+INT       : 'int';
 BOOL      : 'bool';
 CHAR      : 'char';
 NOT       : 'not';
@@ -164,9 +164,9 @@ RETURN    : 'return';
 BOOLEAN   : TRUE | FALSE;
 TRUE      : 'true';
 FALSE     : 'false';
-CHARVAL	  : '\'' ( ESC_SEQ | ~('\\'|'"') ) '\'';
+FLOATVAL  : (('0'..'9')* '.' ('0'..'9')+);
 INTVAL    : ('0'..'9')+ ;
-FLOATVAL  : (INTVAL '.' INTVAL);
+CHARVAL	  : '\'' ( ESC_SEQ | ~('\\'|'"') ) '\'';
 ID        : ('a'..'z'|'A'..'Z'|'_')('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
 
 

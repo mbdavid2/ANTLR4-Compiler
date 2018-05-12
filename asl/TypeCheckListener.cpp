@@ -223,12 +223,38 @@ void TypeCheckListener::exitLeft_expr(AslParser::Left_exprContext *ctx) {
   DEBUG_EXIT();
 }
 
+void TypeCheckListener::enterUnary(AslParser::UnaryContext *ctx) {
+  DEBUG_ENTER();
+}
+void TypeCheckListener::exitUnary(AslParser::UnaryContext *ctx) {
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->expr());
+  //cout << "Unary: ";Types.dump(t1); 
+  if (ctx->NOT()) {
+    if ((not Types.isErrorTy(t1)) and not Types.isBooleanTy(t1)) Errors.incompatibleOperator(ctx->op);
+    //t1 = Types.createBooleanTy();
+  }
+  else if (ctx->MINUS()) {
+    if ((not Types.isErrorTy(t1)) and not Types.isNumericTy(t1)) Errors.incompatibleOperator(ctx->op);
+    //t1 = Types.createIntegerTy();
+  }
+  else if (ctx->PLUS()) {
+    if ((not Types.isErrorTy(t1)) and not Types.isNumericTy(t1)) Errors.incompatibleOperator(ctx->op);
+    //t1 = Types.createIntegerTy();
+  }
+  putTypeDecor(ctx, t1);
+  putIsLValueDecor(ctx, false);
+  DEBUG_EXIT();
+}
+
 void TypeCheckListener::enterArithmetic(AslParser::ArithmeticContext *ctx) {
   DEBUG_ENTER();
 }
 void TypeCheckListener::exitArithmetic(AslParser::ArithmeticContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
+
+  /*cout << endl << "arithmetic op:          ";
+  Types.dump(t1); cout << "   op   "; Types.dump(t2);cout << endl;*/
   if (((not Types.isErrorTy(t1)) and (not Types.isNumericTy(t1))) or
       ((not Types.isErrorTy(t2)) and (not Types.isNumericTy(t2))))
     Errors.incompatibleOperator(ctx->op);
