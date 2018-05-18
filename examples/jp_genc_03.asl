@@ -1,4 +1,7 @@
 func mul(a:int,b:int) : int
+  var x,y:int
+  write a;
+  write "Hola";
   return a*b;
 endfunc
 

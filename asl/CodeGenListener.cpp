@@ -77,10 +77,44 @@ void CodeGenListener::enterFunction(AslParser::FunctionContext *ctx) {
 void CodeGenListener::exitFunction(AslParser::FunctionContext *ctx) {
   subroutine & subrRef = Code.get_last_subroutine();
   instructionList code = getCodeDecor(ctx->statements());
+  if (ctx->parameters() != NULL) {
+    for(auto eCtx : ctx->parameters()->ID()) {
+        subrRef.add_param(eCtx->getText());
+    } 
+  }
+  /*if (ctx->expr() != NULL) {
+    std::string addr1 = getAddrDecor(ctx->expr());
+    std::string temp = "%"+codeCounters.newTEMP();
+    code = code || instruction::ILOAD(temp, addr1);
+  }*/
   code = code || instruction::RETURN();
   subrRef.set_instructions(code);
   Symbols.popScope();
   DEBUG_EXIT();
+}
+
+void CodeGenListener::enterExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
+    DEBUG_ENTER();
+}
+    
+void CodeGenListener::exitExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
+    std:string nameFunc = ctx->ident()->getText();
+    instructionList   code;
+    instructionList   pushes;
+    std::string temp;
+    pushes = instruction::PUSH(temp);
+    for(auto eCtx : ctx -> expr()) {
+        std::string addr1 = getAddrDecor(eCtx);
+        pushes = pushes || instruction::PUSH(addr1);        
+    }    
+    code = pushes || instruction::CALL(nameFunc);
+    for(auto eCtx : ctx -> expr()) {
+        std::string addr1 = getAddrDecor(eCtx);
+        pushes = pushes || instruction::POP(addr1);        
+    }
+    code = code || instruction::POP(temp);
+    putCodeDecor(ctx, code);
+    DEBUG_EXIT();
 }
 
 void CodeGenListener::enterDeclarations(AslParser::DeclarationsContext *ctx) {
@@ -107,6 +141,7 @@ void CodeGenListener::enterType(AslParser::TypeContext *ctx) {
   DEBUG_ENTER();
 }
 void CodeGenListener::exitType(AslParser::TypeContext *ctx) {
+    
   DEBUG_EXIT();
 }
 
@@ -151,9 +186,12 @@ void CodeGenListener::exitAssignStmt(AslParser::AssignStmtContext *ctx) {
   DEBUG_EXIT();
 }
 
+
+
 void CodeGenListener::enterIfStmt(AslParser::IfStmtContext *ctx) {
   DEBUG_ENTER();
 }
+
 void CodeGenListener::exitIfStmt(AslParser::IfStmtContext *ctx) {
   instructionList   code;
   std::string      addr1 = getAddrDecor(ctx->expr());
@@ -163,6 +201,30 @@ void CodeGenListener::exitIfStmt(AslParser::IfStmtContext *ctx) {
   std::string labelEndIf = "endif"+label;
   code = code1 || instruction::FJUMP(addr1, labelEndIf) ||
          code2 || instruction::LABEL(labelEndIf);
+  putCodeDecor(ctx, code);
+  DEBUG_EXIT();
+}
+
+void CodeGenListener::enterWhileStmt(AslParser::WhileStmtContext *ctx) {
+  DEBUG_ENTER();
+}
+
+void CodeGenListener::exitWhileStmt(AslParser::WhileStmtContext *ctx) {
+  instructionList   code;
+  std::string      addr1 = getAddrDecor(ctx->expr());
+  instructionList  code1 = getCodeDecor(ctx->expr());
+  instructionList  code2 = getCodeDecor(ctx->statements());
+  
+  std::string label = codeCounters.newLabelWHILE();
+  
+  std::string labelEndWhile = "endwhile"+label;
+  std::string labelStartWhile = "startwhile"+label;
+  
+  
+  code = instruction::LABEL(labelStartWhile) || code1 || instruction::FJUMP(addr1, labelEndWhile) ||
+         code2 || instruction::UJUMP(labelStartWhile) || instruction::LABEL(labelEndWhile);
+         
+         
   putCodeDecor(ctx, code);
   DEBUG_EXIT();
 }
@@ -283,16 +345,45 @@ void CodeGenListener::exitArithmetic(AslParser::ArithmeticContext *ctx) {
   //cout << "salu2" << "   1: " << addr1 << "   2: " << addr2 << endl;
   if (Types.isFloatTy(t1) || Types.isFloatTy(t2)) {
     //Operaciones con floats
-    if (ctx->MUL())
-      code = code || instruction::FMUL(temp, addr1, addr2);
-    else if (ctx->DIV())
-      code = code || instruction::FDIV(temp, addr1, addr2);
-    else if (ctx->MINUS())
-      code = code || instruction::FSUB(temp, addr1, addr2);
-    else if (ctx->PLUS())
-      code = code || instruction::FADD(temp, addr1, addr2);
-    else if (ctx->MOD())
-      code = code || instruction::FDIV(temp, addr1, addr2); //TODO: mod!!
+    std::string temp1 = "%"+codeCounters.newTEMP();
+    std::string temp2 = "%"+codeCounters.newTEMP();
+    if(Types.isFloatTy(t1) && !Types.isFloatTy(t2)){
+        if (ctx->MUL())
+        code = code ||instruction::FLOAT(temp2,addr2) ||instruction::FMUL(temp, addr1, temp2);
+        else if (ctx->DIV())
+        code = code ||instruction::FLOAT(temp2,addr2) || instruction::FDIV(temp, addr1, temp2);
+        else if (ctx->MINUS())
+        code = code ||instruction::FLOAT(temp2,addr2) || instruction::FSUB(temp, addr1, temp2);
+        else if (ctx->PLUS())
+        code = code ||instruction::FLOAT(temp2,addr2) || instruction::FADD(temp, addr1, temp2);
+        else if (ctx->MOD())
+        code = code ||instruction::FLOAT(temp2,addr2) || instruction::FDIV(temp, addr1, temp2); //TODO: mod!!
+    }
+    else if(!Types.isFloatTy(t1) && Types.isFloatTy(t2)){
+        if (ctx->MUL())
+        code = code ||instruction::FLOAT(temp1,addr1) ||instruction::FMUL(temp, temp1, addr2);
+        else if (ctx->DIV())
+        code = code ||instruction::FLOAT(temp1,addr1) || instruction::FDIV(temp, temp1, addr2);
+        else if (ctx->MINUS())
+        code = code ||instruction::FLOAT(temp1,addr1) || instruction::FSUB(temp, temp1, addr2);
+        else if (ctx->PLUS())
+        code = code ||instruction::FLOAT(temp1,addr1) || instruction::FADD(temp, temp1, addr2);
+        else if (ctx->MOD())
+        code = code ||instruction::FLOAT(temp1,addr1) || instruction::FDIV(temp, temp1, addr2); //TODO: mod!!
+    }
+    else{
+        if (ctx->MUL())
+        code = code ||instruction::FMUL(temp, addr1, addr2);
+        else if (ctx->DIV())
+        code = code ||instruction::FDIV(temp, addr1, addr2);
+        else if (ctx->MINUS())
+        code = code ||instruction::FSUB(temp, addr1, addr2);
+        else if (ctx->PLUS())
+        code = code ||instruction::FADD(temp, addr1, addr2);
+        else if (ctx->MOD())
+        code = code ||instruction::FDIV(temp, addr1, addr2); //TODO: mod!!
+        
+    }
   }
   else {
     if (ctx->MUL())
@@ -416,7 +507,10 @@ void CodeGenListener::exitValue(AslParser::ValueContext *ctx) {
   instructionList code;
   std::string temp = "%"+codeCounters.newTEMP();
   if (ctx->BOOLEAN()) {
-  	code = instruction::LOAD(temp, ctx->getText()); //TODO: npi
+    if(ctx->getText() == "true")
+        code = instruction::ILOAD(temp, "1");
+  	else
+        code = instruction::ILOAD(temp, "0");
   }
   else if (ctx->INTVAL()) {
   	code = instruction::ILOAD(temp, ctx->getText());
