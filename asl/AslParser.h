@@ -199,9 +199,7 @@ public:
   public:
     ProcCallContext(StatementContext *ctx);
 
-    IdentContext *ident();
-    std::vector<ExprContext *> expr();
-    ExprContext* expr(size_t i);
+    FuncCallContext *funcCall();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
   };
@@ -432,7 +430,7 @@ public:
   public:
     FuncCallContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *ID();
+    IdentContext *ident();
     std::vector<ExprContext *> expr();
     ExprContext* expr(size_t i);
 

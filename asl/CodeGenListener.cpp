@@ -131,6 +131,53 @@ void CodeGenListener::exitExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
     DEBUG_EXIT();
 }
 
+void CodeGenListener::enterProcCall(AslParser::ProcCallContext *ctx) {
+  DEBUG_ENTER();
+}
+void CodeGenListener::exitProcCall(AslParser::ProcCallContext *ctx) {
+    std:string nameFunc = ctx->funcCall()->ident()->getText();
+    instructionList code;
+    instructionList pushes;
+    for(auto eCtx : ctx ->funcCall()-> expr()) {
+        std::string addr1 = getAddrDecor(eCtx);
+        pushes = pushes || instruction::PUSH(addr1);        
+    }    
+    code = code || pushes || instruction::CALL(nameFunc);
+    instructionList pops;
+    for(auto eCtx : ctx->funcCall()-> expr()) {
+        std::string addr1; // = getAddrDecor(eCtx);
+        pops = pops || instruction::POP(addr1);        
+    }
+    //temp = "ret"+codeCounters.newTEMP();
+    code = code || pops;
+    //putAddrDecor(ctx, temp);
+  	putOffsetDecor(ctx, "");
+    putCodeDecor(ctx, code);
+  DEBUG_EXIT();
+}
+
+void CodeGenListener::enterFuncCall(AslParser::FuncCallContext * ctx) {
+	DEBUG_ENTER();
+}
+
+void CodeGenListener::exitFuncCall(AslParser::FuncCallContext * ctx) {
+	std::string addr;
+  	instructionList code, codeExp;
+	for(auto eCtx : ctx-> expr()) {
+        addr = getAddrDecor(eCtx);
+        codeExp = getCodeDecor(eCtx);
+        std::string temp = "%"+codeCounters.newTEMP();
+        code = code || codeExp || instruction::ILOAD(temp, addr);        
+    }    
+	/**std::string ret = getAddrDecor(ctx->expr());
+  	instructionList code = getCodeDecor(ctx->expr());
+  	code = code || instruction::ILOAD("_result", ret);
+	putAddrDecor(ctx, ret);
+  	putOffsetDecor(ctx, "");*/
+    putCodeDecor(ctx, code);
+	DEBUG_EXIT();
+}
+
 void CodeGenListener::enterReturnExpr(AslParser::ReturnExprContext *ctx) {
 	DEBUG_ENTER();
 }
@@ -251,18 +298,6 @@ void CodeGenListener::exitWhileStmt(AslParser::WhileStmtContext *ctx) {
          code2 || instruction::UJUMP(labelStartWhile) || instruction::LABEL(labelEndWhile);
          
          
-  putCodeDecor(ctx, code);
-  DEBUG_EXIT();
-}
-
-void CodeGenListener::enterProcCall(AslParser::ProcCallContext *ctx) {
-  DEBUG_ENTER();
-}
-void CodeGenListener::exitProcCall(AslParser::ProcCallContext *ctx) {
-  instructionList code;
-  // std::string name = ctx->ident()->ID()->getSymbol()->getText();
-  std::string name = ctx->ident()->getText();
-  code = instruction::CALL(name);
   putCodeDecor(ctx, code);
   DEBUG_EXIT();
 }

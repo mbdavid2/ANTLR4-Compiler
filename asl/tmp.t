@@ -72,7 +72,11 @@ function main
    %4 = 1
    %5 = %3 + %4
    b = %5
+   pushparam b
+   pushparam %7
    call f1
+   popparam 
+   popparam 
    return
 endfunction
 

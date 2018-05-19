@@ -400,22 +400,22 @@ void TypeCheckListener::enterProcCall(AslParser::ProcCallContext *ctx) {
 }
 void TypeCheckListener::exitProcCall(AslParser::ProcCallContext *ctx) {
     //Symbols.popScope();
-  std::string ident = ctx->ident()->ID()->getText();
-  TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
+  std::string ident = ctx->funcCall()->ident()->ID()->getText();
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->funcCall()->ident());
   if (not Types.isErrorTy(t1)) {
 	  if (not Types.isFunctionTy(t1)) {
-	    Errors.isNotCallable(ctx->ident());
+	    Errors.isNotCallable(ctx->funcCall()->ident());
 	  }
 	  else {
 	  	TypesMgr::TypeId tRet = Types.getFuncReturnType(t1);
 	    std::vector<TypesMgr::TypeId> lParamsTy = Types.getFuncParamsTypes(t1); //TODO: feed me pls
 	    int i = 0;
-	    for(auto eCtx : ctx -> expr()) i++;
+	    for(auto eCtx : ctx -> funcCall()->expr()) i++;
 	    if (i != lParamsTy.size()) Errors.numberOfParameters(ctx);
 		else {
 			i = 0;
 		    //cout << "Func name: " << ident << endl;
-		    for(auto eCtx : ctx -> expr()){
+		    for(auto eCtx : ctx -> funcCall()->expr()){
 		    	//cout << "Iter: " << i << " size:  " << lParamsTy.size() << endl;
 		        TypesMgr::TypeId tExp = getTypeDecor(eCtx);
 		        if (not Types.copyableTypes(lParamsTy[i], tExp)) {
