@@ -111,7 +111,8 @@ void CodeGenListener::exitExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
     instructionList code;
     instructionList pushes;
     std::string temp = "%ret"+codeCounters.newTEMP();;
-    code = code || instruction::ILOAD(temp, "3");
+    code = code || instruction::ILOAD(temp, "3"); //esto es simplemente para "declarar" el temp este
+    //donde se guardara el resultado
     pushes = instruction::PUSH("");
     for(auto eCtx : ctx -> expr()) {
         std::string addr1 = getAddrDecor(eCtx);
@@ -138,6 +139,15 @@ void CodeGenListener::exitProcCall(AslParser::ProcCallContext *ctx) {
     std:string nameFunc = ctx->funcCall()->ident()->getText();
     instructionList code;
     instructionList pushes;
+
+    std::string addr;
+    instructionList codeExp;
+    for(auto eCtx : ctx->funcCall()->expr()) {
+        addr = getAddrDecor(eCtx);
+        codeExp = getCodeDecor(eCtx);
+        code = code || codeExp;
+    }    
+
     for(auto eCtx : ctx ->funcCall()-> expr()) {
         std::string addr1 = getAddrDecor(eCtx);
         pushes = pushes || instruction::PUSH(addr1);        
@@ -161,20 +171,23 @@ void CodeGenListener::enterFuncCall(AslParser::FuncCallContext * ctx) {
 }
 
 void CodeGenListener::exitFuncCall(AslParser::FuncCallContext * ctx) {
-	std::string addr;
+	/*std::string addr;
   	instructionList code, codeExp;
 	for(auto eCtx : ctx-> expr()) {
-        addr = getAddrDecor(eCtx);
+		addr = getAddrDecor(eCtx);
+        cout << "dsada: " << addr << endl;
         codeExp = getCodeDecor(eCtx);
         std::string temp = "%"+codeCounters.newTEMP();
-        code = code || codeExp || instruction::ILOAD(temp, addr);        
-    }    
+        code = code || codeExp || instruction::ILOAD(temp, addr);
+        putAddrDecor(eCtx, temp);
+  		putOffsetDecor(eCtx, "");  
+    }    */
 	/**std::string ret = getAddrDecor(ctx->expr());
   	instructionList code = getCodeDecor(ctx->expr());
   	code = code || instruction::ILOAD("_result", ret);
-	putAddrDecor(ctx, ret);
+	putAddrDecor(ctx, temp);
   	putOffsetDecor(ctx, "");*/
-    putCodeDecor(ctx, code);
+   // putCodeDecor(ctx, code);
 	DEBUG_EXIT();
 }
 
@@ -458,6 +471,7 @@ void CodeGenListener::exitArithmetic(AslParser::ArithmeticContext *ctx) {
     else if (ctx->MOD())
       code = code || instruction::DIV(temp, addr1, addr2); //TODO: mod!!
   }
+  //cout << "salu2" << "   1: " << addr1 << "   2: " << addr2 << "result temp: " << temp << endl;
   putAddrDecor(ctx, temp);
   putOffsetDecor(ctx, "");
   putCodeDecor(ctx, code);
