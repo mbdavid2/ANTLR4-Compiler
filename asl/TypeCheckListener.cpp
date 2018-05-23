@@ -216,6 +216,7 @@ void TypeCheckListener::enterLeft_expr(AslParser::Left_exprContext *ctx) {
 void TypeCheckListener::exitLeft_expr(AslParser::Left_exprContext *ctx) {
   //if (ctx->ident()) std::cout << "Left Expr Ident" << std::endl;
   //if (ctx->array_access()) std::cout << "Left Expr Array" << std::endl;
+  //TODO: dsadas
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
   putTypeDecor(ctx, t1);
   bool b = getIsLValueDecor(ctx->ident());
@@ -351,6 +352,7 @@ void TypeCheckListener::exitArrayAccess(AslParser::ArrayAccessContext *ctx) {
   //that we're accessing an array type)
 
   //Check ident
+  //TODO: dsadas
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
   //Types.dump(t1);
   if (not Types.isErrorTy(t1)) {

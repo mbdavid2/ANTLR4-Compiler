@@ -80,6 +80,12 @@ public:
   void enterStatements(AslParser::StatementsContext *ctx);
   void exitStatements(AslParser::StatementsContext *ctx);
 
+  void enterArrayAccess(AslParser::ArrayAccessContext *ctx);
+  void exitArrayAccess(AslParser::ArrayAccessContext *ctx);
+  
+  void enterExprArrayAccess(AslParser::ExprArrayAccessContext *ctx);
+  void exitExprArrayAccess(AslParser::ExprArrayAccessContext *ctx);
+
   void enterAssignStmt(AslParser::AssignStmtContext *ctx);
   void exitAssignStmt(AslParser::AssignStmtContext *ctx);
 
