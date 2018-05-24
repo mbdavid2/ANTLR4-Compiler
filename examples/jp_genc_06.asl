@@ -18,6 +18,9 @@ func fz(r:int, u:float) : float
   while r>0 do
     r = r-1;
   endwhile
+  write "Valor u: ";
+  write u;
+  write "\n";
   if r == 0 then
     f(55555, 1/4);
   endif
@@ -28,7 +31,14 @@ func main()
   var a:int
   var q :float
   q = 0;
-  q = fz(3+4, fz(4444, q+2));
+  write "Valor q: ";
+  write q;
+  write "\n";
+  q = q + 2;
+  write "Valor q: ";
+  write q;
+  write "\n";
+  q = fz(3+4, fz(4444, q));
   write q+3.7+4;
   write "\n";
 endfunc

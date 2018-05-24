@@ -82,9 +82,9 @@ void CodeGenListener::exitFunction(AslParser::FunctionContext *ctx) {
     for(auto eCtx : ctx->parameters()->ID()) {
 	    subrRef.add_param(eCtx->getText());
 	    TypesMgr::TypeId tid1 = Symbols.getType(eCtx->getText());
-		if (Types.isFloatTy(tid1)) {
+		/*if (Types.isFloatTy(tid1)) {
 	    	code = instruction::FLOAT(eCtx->getText(), eCtx->getText()) || code;
-		}
+		}*/
     } 
   }
   if (ctx->type() != NULL) {

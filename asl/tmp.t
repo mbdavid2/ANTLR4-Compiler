@@ -12,6 +12,9 @@ function f
   endvars
 
      f = float f
+     %1 = 5
+     readi %2
+     z[%1] = %2
      %3 = 5
      %4 = z[%3]
      writei %4

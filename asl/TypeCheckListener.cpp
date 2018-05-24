@@ -214,14 +214,24 @@ void TypeCheckListener::enterLeft_expr(AslParser::Left_exprContext *ctx) {
   DEBUG_ENTER();
 }
 void TypeCheckListener::exitLeft_expr(AslParser::Left_exprContext *ctx) {
-  //if (ctx->ident()) std::cout << "Left Expr Ident" << std::endl;
-  //if (ctx->array_access()) std::cout << "Left Expr Array" << std::endl;
+  /*if (ctx->ident()) std::cout << "Left Expr Ident    " << std::endl;
+  if (ctx->array_access()) std::cout << "Left Expr Array    " << std::endl;*/
   //TODO: dsadas
-  TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
+  TypesMgr::TypeId t1;
+  bool b;
+  if (ctx->ident()) {
+  	t1 = getTypeDecor(ctx->ident());
+  	b = getIsLValueDecor(ctx->ident());
+  }
+  if (ctx->array_access()) {
+  	t1 = getTypeDecor(ctx->array_access());
+  	b = getIsLValueDecor(ctx->array_access());
+  }
+  //Types.dump(t1);
   putTypeDecor(ctx, t1);
-  bool b = getIsLValueDecor(ctx->ident());
   putIsLValueDecor(ctx, b);
   DEBUG_EXIT();
+  //cout << "    dw" << endl;
 }
 
 void TypeCheckListener::enterUnary(AslParser::UnaryContext *ctx) {
@@ -367,8 +377,8 @@ void TypeCheckListener::exitArrayAccess(AslParser::ArrayAccessContext *ctx) {
   //Check if the index is valid
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr());
 
-  if (not Types.isIntegerTy(t2)) Errors.nonIntegerIndexInArrayAccess(ctx->expr());
-
+  if (not Types.isIntegerTy(t2) and not Types.isErrorTy(t2)) Errors.nonIntegerIndexInArrayAccess(ctx->expr());
+  putIsLValueDecor(ctx, true);
   DEBUG_EXIT();
 }
 
