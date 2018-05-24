@@ -158,17 +158,27 @@ void CodeGenListener::exitExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
     std:string nameFunc = ctx->ident()->getText();
     instructionList code;
     instructionList pushes;
-    std::string temp = "%ret"+codeCounters.newTEMP();;
+    std::string temp = "%ret"+codeCounters.newTEMP();
     code = code || instruction::ILOAD(temp, "0"); //esto es simplemente para "declarar" el temp este
     //donde se guardara el resultado
     std::string addr;
     instructionList codeExp;
     pushes = instruction::PUSH("");
+    int i = 0;
     for(auto eCtx : ctx->expr()) {
         addr = getAddrDecor(eCtx);
         codeExp = getCodeDecor(eCtx);
         code = code || codeExp;
-        pushes = pushes || instruction::PUSH(addr); 
+        TypesMgr::TypeId tExpr = getTypeDecor(eCtx);
+        TypesMgr::TypeId tFunc = Symbols.getType(nameFunc);
+        TypesMgr::TypeId tParam = Types.getParameterType(tFunc,i);
+        std::string conversionTemp = "%"+codeCounters.newTEMP();
+        if (Types.isIntegerTy(tExpr) && Types.isFloatTy(tParam)) {
+          code = code || instruction::FLOAT(conversionTemp, addr);
+          pushes = pushes || instruction::PUSH(conversionTemp); 
+        }
+        else pushes = pushes || instruction::PUSH(addr); 
+        i++;
     }      
     code = code || pushes || instruction::CALL(nameFunc);
     instructionList pops;
@@ -194,11 +204,21 @@ void CodeGenListener::exitProcCall(AslParser::ProcCallContext *ctx) {
 
     std::string addr;
     instructionList codeExp;
+    int i = 0;
     for(auto eCtx : ctx->funcCall()->expr()) {
         addr = getAddrDecor(eCtx);
         codeExp = getCodeDecor(eCtx);
         code = code || codeExp;
-        pushes = pushes || instruction::PUSH(addr); 
+        TypesMgr::TypeId tExpr = getTypeDecor(eCtx);
+        TypesMgr::TypeId tFunc = Symbols.getType(nameFunc);
+        TypesMgr::TypeId tParam = Types.getParameterType(tFunc,i);
+        std::string conversionTemp = "%"+codeCounters.newTEMP();
+        if (Types.isIntegerTy(tExpr) && Types.isFloatTy(tParam)) {
+          code = code || instruction::FLOAT(conversionTemp, addr);
+          pushes = pushes || instruction::PUSH(conversionTemp); 
+        }
+        else pushes = pushes || instruction::PUSH(addr); 
+        i++;
     }     
     code = code || pushes || instruction::CALL(nameFunc);
     instructionList pops;
@@ -307,7 +327,10 @@ void CodeGenListener::exitAssignStmt(AslParser::AssignStmtContext *ctx) {
   instructionList code2 = getCodeDecor(ctx->expr());
   TypesMgr::TypeId tid2 = getTypeDecor(ctx->expr());
   if (Types.isFloatTy(tid1) || Types.isFloatTy(tid2)) {
-    code = code1 || code2 || instruction::FLOAD(addr1, addr2);
+    if (Types.isFloatTy(tid1) && Types.isIntegerTy(tid2)) {
+      code = code1 || code2 || instruction::FLOAT(addr2, addr2) || instruction::FLOAD(addr1, addr2);
+    }
+    else code = code1 || code2 || instruction::FLOAD(addr1, addr2);
   }
   else if (Types.isIntegerTy(tid1)) {
     code = code1 || code2 || instruction::ILOAD(addr1, addr2);
@@ -489,7 +512,7 @@ void CodeGenListener::exitArithmetic(AslParser::ArithmeticContext *ctx) {
   //TypesMgr::TypeId t  = getTypeDecor(ctx);
   std::string temp = "%"+codeCounters.newTEMP();
   //cout << "salu2" << "   1: " << addr1 << "   2: " << addr2 << endl;
-  if (Types.isFloatTy(t1) || Types.isFloatTy(t2)) {
+  if (Types.isFloatTy(t1) || Types.isFloatTy(t2)){ // || Types.isFloatTy(tDest)) {
     //Operaciones con floats
     std::string temp1 = "%"+codeCounters.newTEMP();
     std::string temp2 = "%"+codeCounters.newTEMP();

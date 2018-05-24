@@ -11,7 +11,6 @@ function f
     z 10
   endvars
 
-     f = float f
      %1 = 5
      readi %2
      z[%1] = %2
@@ -52,7 +51,6 @@ function fz
     u
   endparams
 
-     u = float u
   label startwhile1 :
      %1 = 0
      %3 = r == %1
@@ -72,17 +70,18 @@ function fz
      %9 = 1
      %10 = 4
      %11 = %9 / %10
+     %13 = float %11
      pushparam %8
-     pushparam %11
+     pushparam %13
      call f
      popparam 
      popparam 
   label endif1 :
-     %12 = 3
-     %13 = r + %12
-     %15 = float %13
-     %14 = %15 *. u
-     _result = %14
+     %14 = 3
+     %15 = r + %14
+     %17 = float %15
+     %16 = %17 *. u
+     _result = %16
      return
 endfunction
 
@@ -93,37 +92,41 @@ function main
   endvars
 
    %1 = 0
+   %1 = float %1
    q = %1
+   %2 = 0
+   %2 = float %2
+   q = %2
+   %ret14 = 0
+   %3 = 3
+   %4 = 4
+   %5 = %3 + %4
    %ret11 = 0
-   %2 = 3
-   %3 = 4
-   %4 = %2 + %3
-   %ret10 = 0
-   %5 = 4444
-   %6 = 2
-   %9 = float %6
-   %7 = q +. %9
+   %6 = 4444
+   %7 = 2
+   %10 = float %7
+   %8 = q +. %10
    pushparam 
-   pushparam %5
-   pushparam %7
-   call fz
-   popparam 
-   popparam 
-   popparam %ret10
-   pushparam 
-   pushparam %4
-   pushparam %ret10
+   pushparam %6
+   pushparam %8
    call fz
    popparam 
    popparam 
    popparam %ret11
-   q = %ret11
-   %12 = 3.7
-   %13 = q +. %12
-   %16 = 4
-   %19 = float %16
-   %17 = %13 +. %19
-   writef %17
+   pushparam 
+   pushparam %5
+   pushparam %ret11
+   call fz
+   popparam 
+   popparam 
+   popparam %ret14
+   q = %ret14
+   %17 = 3.7
+   %18 = q +. %17
+   %21 = 4
+   %24 = float %21
+   %22 = %18 +. %24
+   writef %22
    writeln
    return
 endfunction
