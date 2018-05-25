@@ -1,75 +1,69 @@
-function fact
+function prod_escalar
   params
     _result
-    n
+    a1
+    a2
   endparams
 
   vars
-    f 1
+    i 1
+    s 1
   endvars
 
-     %1 = 1
-     f = %1
+     %1 = 0
+     s = %1
   label startwhile1 :
-     %2 = 1
-     %4 = n == %2
-     %3 = n < %2
-     %3 = %3 or %4
-     %3 = not %3
+     %2 = 10
+     %3 = i < %2
      ifFalse %3 goto endwhile1
-     %5 = f * n
-     f = %5
-     %6 = 1
-     %7 = n - %6
-     n = %7
+     %4 = a1
+     %5 = %4[i]
+     %6 = a2
+     %7 = %6[i]
+     %8 = %5 * %7
+     %9 = s + %8
+     s = %9
+     %10 = 1
+     %11 = i + %10
+     i = %11
      goto startwhile1
   label endwhile1 :
-     _result = f
+     _result = s
      return
 endfunction
 
 function main
   vars
-    max 1
     i 1
-    f 1
-    end 1
+    v1 10
+    v2 10
   endvars
 
-     %1 = 1
-     end = %1
-     readi %2
-     max = %2
-     %4 = i == max
-     %3 = i < max
-     %3 = %3 or %4
-     ifFalse %3 goto endif1
-     %5 = 0
-     end = %5
-  label endif1 :
+     %1 = 0
+     i = %1
   label startwhile1 :
-     %7 = not end
-     ifFalse %7 goto endwhile1
-     writei i
-     %8 = '!'
-     writec %8
-     %8 = '='
-     writec %8
-     %ret9 = 0
-     pushparam 
-     pushparam i
-     call fact
-     popparam 
-     popparam %ret9
-     writei %ret9
-     writeln
-     %12 = i == max
-     ifFalse %12 goto endif2
-     %13 = 1
-     end = %13
-  label endif2 :
+     %2 = 10
+     %3 = i < %2
+     ifFalse %3 goto endwhile1
+     %4 = - i
+     v1[i] = %4
+     %5 = i * i
+     v2[i] = %5
+     %6 = 1
+     %7 = i + %6
+     i = %7
      goto startwhile1
   label endwhile1 :
+     %ret8 = 0
+     pushparam 
+     pushparam v1
+     pushparam v2
+     call prod_escalar
+     popparam 
+     popparam 
+     popparam %ret8
+     writei %ret8
+     writeln
      return
 endfunction
 

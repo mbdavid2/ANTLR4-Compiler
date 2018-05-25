@@ -36,19 +36,50 @@ function main
     end 1
   endvars
 
-   %1 = 1
-   end = %1
-   readi %2
-   max = %2
-   %ret3 = 0
-   pushparam 
-   pushparam max
-   call fact
-   popparam 
-   popparam %ret3
-   writei %ret3
-   writeln
-   return
+     %1 = 1
+     end = %1
+     readi %2
+     max = %2
+     %4 = i == max
+     %3 = i < max
+     %3 = %3 or %4
+     ifFalse %3 goto else2
+     %5 = 0
+     end = %5
+     goto endif1
+  label else2 :
+     %6 = 0
+     i = %6
+  label endif1 :
+  label startwhile1 :
+     %7 = not end
+     ifFalse %7 goto endwhile1
+     writei i
+     %8 = '!'
+     writec %8
+     %8 = '='
+     writec %8
+     %ret9 = 0
+     pushparam 
+     pushparam i
+     call fact
+     popparam 
+     popparam %ret9
+     writei %ret9
+     writeln
+     %12 = i == max
+     ifFalse %12 goto else4
+     %13 = 1
+     end = %13
+     goto endif3
+  label else4 :
+     %14 = 1
+     %15 = i + %14
+     i = %15
+  label endif3 :
+     goto startwhile1
+  label endwhile1 :
+     return
 endfunction
 
 

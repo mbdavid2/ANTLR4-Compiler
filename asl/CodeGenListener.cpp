@@ -384,12 +384,22 @@ void CodeGenListener::enterIfStmt(AslParser::IfStmtContext *ctx) {
 void CodeGenListener::exitIfStmt(AslParser::IfStmtContext *ctx) {
   instructionList   code;
   std::string      addr1 = getAddrDecor(ctx->expr());
-  instructionList  code1 = getCodeDecor(ctx->expr());
-  instructionList  code2 = getCodeDecor(ctx->statements(0));
-  std::string      label = codeCounters.newLabelIF();
-  std::string labelEndIf = "endif"+label;
-  code = code1 || instruction::FJUMP(addr1, labelEndIf) ||
-         code2 || instruction::LABEL(labelEndIf);
+  instructionList  codeCond = getCodeDecor(ctx->expr());
+  instructionList  codeIf = getCodeDecor(ctx->statements(0));
+  std::string labelEndIf = codeCounters.newLabelIF();
+  labelEndIf = "endif"+labelEndIf;
+  if (ctx->ELSE() != NULL) {
+  	std::string labelElse = codeCounters.newLabelIF();
+  	labelElse = "else"+labelElse;
+  	instructionList  codeElse = getCodeDecor(ctx->statements(1));
+  	code = codeCond || instruction::FJUMP(addr1, labelElse) ||
+           codeIf || instruction::UJUMP(labelEndIf) || instruction::LABEL(labelElse) ||
+           codeElse || instruction::LABEL(labelEndIf);
+  }
+  else {
+    code = codeCond || instruction::FJUMP(addr1, labelEndIf) ||
+           codeIf || instruction::LABEL(labelEndIf);
+  }
   putCodeDecor(ctx, code);
   DEBUG_EXIT();
 }
