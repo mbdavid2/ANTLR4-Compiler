@@ -183,7 +183,12 @@ void CodeGenListener::exitExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
         TypesMgr::TypeId tFunc = Symbols.getType(nameFunc);
         TypesMgr::TypeId tParam = Types.getParameterType(tFunc,i);
         std::string conversionTemp = "%"+codeCounters.newTEMP();
-        if (Types.isIntegerTy(tExpr) && Types.isFloatTy(tParam)) {
+        if (Types.isArrayTy(tExpr)) {
+           string temporal = "&" + addr;
+           code = code || instruction::LOAD(conversionTemp, temporal);
+           pushes = pushes || instruction::PUSH(conversionTemp);
+        }
+        else if (Types.isIntegerTy(tExpr) && Types.isFloatTy(tParam)) {
           code = code || instruction::FLOAT(conversionTemp, addr);
           pushes = pushes || instruction::PUSH(conversionTemp); 
         }
@@ -687,7 +692,7 @@ void CodeGenListener::exitRelational(AslParser::RelationalContext *ctx) {
   std::string temp = "%"+codeCounters.newTEMP();
   
   //op=EQUAL|op=NOTEQUAL|op=LESS|op=LESSEQ|op=BIGGER|op=BIGGEREQ
-  
+  //TODO: en code.cpp hay FEQ, FLT, etc...supongo que hay que mirar tambien si son floats
   if (ctx->EQUAL())
     code = code || instruction::EQ(temp, addr1, addr2);
   else if (ctx->NOTEQUAL())
