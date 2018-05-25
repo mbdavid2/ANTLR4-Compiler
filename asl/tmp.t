@@ -1,53 +1,76 @@
-function f
+function fact
   params
-    a
+    _result
+    n
   endparams
 
-   %1 = 5
-   %2 = 5
-   %3 = a[%2]
-   %4 = 10
-   %7 = float %4
-   %5 = %3 *. %7
-   a[%1] = %5
-   return
+  vars
+    f 1
+  endvars
+
+     %1 = 1
+     f = %1
+  label startwhile1 :
+     %2 = 1
+     %4 = n == %2
+     %3 = n < %2
+     %3 = %3 or %4
+     %3 = not %3
+     ifFalse %3 goto endwhile1
+     %5 = f * n
+     f = %5
+     %6 = 1
+     %7 = n - %6
+     n = %7
+     goto startwhile1
+  label endwhile1 :
+     _result = f
+     return
 endfunction
 
 function main
   vars
-    b 10
-    c 10
+    max 1
+    i 1
+    f 1
+    end 1
   endvars
 
-   %1 = 5
-   readf %2
-   b[%1] = %2
-   %3 = 7
-   %4 = 5
-   %5 = b[%4]
-   c[%3] = %5
-   %6 = 5
-   %7 = b[%6]
-   writef %7
-   writeln
-   %9 = 7
-   %10 = c[%9]
-   writef %10
-   writeln
-   pushparam 
-   pushparam b
-   call f
-   popparam 
-   popparam 
-   %13 = 5
-   %14 = b[%13]
-   writef %14
-   writeln
-   %16 = 7
-   %17 = c[%16]
-   writef %17
-   writeln
-   return
+     %1 = 1
+     end = %1
+     readi %2
+     max = %2
+     %4 = i == max
+     %3 = i < max
+     %3 = %3 or %4
+     ifFalse %3 goto endif1
+     %5 = 0
+     end = %5
+  label endif1 :
+  label startwhile1 :
+     %7 = not end
+     ifFalse %7 goto endwhile1
+     writei i
+     %8 = '!'
+     writec %8
+     %8 = '='
+     writec %8
+     %ret9 = 0
+     pushparam 
+     pushparam i
+     call fact
+     popparam 
+     popparam %ret9
+     writei %ret9
+     writeln
+     %12 = i == max
+     ifFalse %12 goto endif2
+     %13 = 1
+     end = %13
+  label endif2 :
+     goto startwhile1
+  label endwhile1 :
+     return
 endfunction
 
 

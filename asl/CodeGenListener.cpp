@@ -125,10 +125,17 @@ void CodeGenListener::enterArrayAccess(AslParser::ArrayAccessContext *ctx) {
 
 void CodeGenListener::exitArrayAccess(AslParser::ArrayAccessContext *ctx) {
 	std::string ident = ctx->ident()->getText();
-	std::string addr = getAddrDecor(ctx->expr());
+	std::string index = getAddrDecor(ctx->expr());
 	instructionList code = getCodeDecor(ctx->expr());
-	std::string arrayAcces = ident + "[" + addr + "]";
-	//cout << "salu2 : " << arrayAcces << " codigo: " << code.dump() << endl;
+	std::string arrayAcces;
+	bool param = Symbols.isParameterClass(ident);
+	if (param) { 
+		std::string temp = "%"+codeCounters.newTEMP();
+		code = code || instruction::LOAD(temp, ident);;
+		arrayAcces = temp + "[" + index + "]";
+		//cout << "salu2 : " << arrayAcces << endl;
+	}
+	else arrayAcces = ident + "[" + index + "]";
 	putAddrDecor(ctx, arrayAcces);
 	//cout << "dasd: " << arrayAcces << endl;
   	putOffsetDecor(ctx, "");
@@ -144,7 +151,8 @@ void CodeGenListener::exitExprArrayAccess(AslParser::ExprArrayAccessContext *ctx
 	std::string addr = getAddrDecor(ctx->array_access());
 	instructionList code = getCodeDecor(ctx->array_access());
 	std::string temp = "%"+codeCounters.newTEMP();
-	code = code || instruction::ILOAD(temp, addr);
+	code = code || instruction::ILOAD(temp, addr); //TODO: esto tendriamos que contemplar
+	//el caso de que el array es de floats tambien no?
 	putAddrDecor(ctx, temp);
 	putOffsetDecor(ctx, "");
 	putCodeDecor(ctx, code);
