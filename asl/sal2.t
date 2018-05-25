@@ -34,10 +34,8 @@ function main
    %10 = c[%9]
    writef %10
    writeln
-   pushparam 
    pushparam b
    call f
-   popparam 
    popparam 
    %13 = 5
    %14 = b[%13]
@@ -47,6 +45,10 @@ function main
    %17 = c[%16]
    writef %17
    writeln
+   %19 = 2
+   %20 = 3
+   %21 = %19 + %20
+   writei %21
    return
 endfunction
 

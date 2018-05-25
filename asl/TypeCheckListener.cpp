@@ -227,11 +227,20 @@ void TypeCheckListener::exitLeft_expr(AslParser::Left_exprContext *ctx) {
   	t1 = getTypeDecor(ctx->array_access());
   	b = getIsLValueDecor(ctx->array_access());
   }
-  //Types.dump(t1);
+  //Types.dumpare(t1);
   putTypeDecor(ctx, t1);
   putIsLValueDecor(ctx, b);
   DEBUG_EXIT();
   //cout << "    dw" << endl;
+}
+
+void TypeCheckListener::enterParenthesis(AslParser::ParenthesisContext *ctx) {
+  DEBUG_ENTER();
+}
+void TypeCheckListener::exitParenthesis(AslParser::ParenthesisContext *ctx) {
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->expr());
+  putTypeDecor(ctx,t1);
+  DEBUG_EXIT();
 }
 
 void TypeCheckListener::enterUnary(AslParser::UnaryContext *ctx) {

@@ -89,6 +89,9 @@ public:
   void enterBinaryop(AslParser::BinaryopContext *ctx);
   void exitBinaryop(AslParser::BinaryopContext *ctx); 
 
+  void enterParenthesis(AslParser::ParenthesisContext *ctx);
+  void exitParenthesis(AslParser::ParenthesisContext *ctx);
+
   void enterProcCall(AslParser::ProcCallContext *ctx);
   void exitProcCall(AslParser::ProcCallContext *ctx);
 

@@ -3,7 +3,7 @@ func f(a:int, f:float): bool
   var b:bool
   var z:array[10] of int
   read z[5];
-  write z[5];
+  write z[5]+88;
   read b;
   read f;
   if b then
@@ -27,7 +27,6 @@ endfunc
 func main()
   var a:int
   var q :float
-  q = 0;
   q = 0;
   q = fz(3+4, fz(4444, q + 2));
   write q+3.7+4;
