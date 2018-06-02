@@ -82,9 +82,6 @@ void CodeGenListener::exitFunction(AslParser::FunctionContext *ctx) {
     for(auto eCtx : ctx->parameters()->ID()) {
 	    subrRef.add_param(eCtx->getText());
 	    TypesMgr::TypeId tid1 = Symbols.getType(eCtx->getText());
-		/*if (Types.isFloatTy(tid1)) {
-	    	code = instruction::FLOAT(eCtx->getText(), eCtx->getText()) || code;
-		}*/
     } 
   }
 
@@ -106,11 +103,6 @@ void CodeGenListener::exitFunction(AslParser::FunctionContext *ctx) {
   	}
    	putAddrDecor(ctx, ret);
   }
-  /*if (ctx->expr() != NULL) {
-    std::string addr1 = getAddrDecor(ctx->expr());
-    std::string temp = "%"+codeCounters.newTEMP();
-    code = code || instruction::ILOAD(temp, addr1);
-  }*/
   code = code || instruction::RETURN();
   subrRef.set_instructions(code);
   Symbols.popScope();
@@ -374,7 +366,7 @@ void CodeGenListener::exitAssignStmt(AslParser::AssignStmtContext *ctx) {
   else if (Types.isCharacterTy(tid1)) {
     code = code1 || code2 || instruction::CHLOAD(addr1, addr2);
   }
-  else if (Types.isBooleanTy(tid1)) { //TODO: bools con int??
+  else if (Types.isBooleanTy(tid1)) {
     code = code1 || code2 || instruction::ILOAD(addr1, addr2);
   }
   else code = code1 || code2 || instruction::LOAD(addr1, addr2);
@@ -444,9 +436,8 @@ void CodeGenListener::exitReadStmt(AslParser::ReadStmtContext *ctx) {
   instructionList code1 = getCodeDecor(ctx->left_expr());
   TypesMgr::TypeId tid1 = getTypeDecor(ctx->left_expr());
   //cout << "read expr: " << addr1 << "   " ; Types.dump(tid1); cout << endl;
-  //if (Types.isArrayTy(tid1)) tid1 = tid1.getArrayElemType(); TODO: dsadas
   if (Types.isBooleanTy(tid1)) {
-  	code = code1 || instruction::READI(temp) || instruction::ILOAD(addr1, temp); //TODO: NPI
+  	code = code1 || instruction::READI(temp) || instruction::ILOAD(addr1, temp);
   }
   else if (Types.isIntegerTy(tid1)) {
   	code = code1 || instruction::READI(temp) || instruction::ILOAD(addr1, temp);
@@ -473,7 +464,7 @@ void CodeGenListener::exitWriteExpr(AslParser::WriteExprContext *ctx) {
   TypesMgr::TypeId tid1 = getTypeDecor(ctx->expr());
   //cout << "write expr: " << addr1 << "   " ; Types.dump(tid1); cout << endl;
   if (Types.isBooleanTy(tid1)) {
-  	code = code1 || instruction::WRITEI(addr1); //TODO: NPI
+  	code = code1 || instruction::WRITEI(addr1);
   }
   else if (Types.isIntegerTy(tid1)) {
   	code = code1 || instruction::WRITEI(addr1);
@@ -571,8 +562,10 @@ void CodeGenListener::exitArithmetic(AslParser::ArithmeticContext *ctx) {
         code = code ||instruction::FLOAT(temp2,addr2) || instruction::FSUB(temp, addr1, temp2);
         else if (ctx->PLUS())
         code = code ||instruction::FLOAT(temp2,addr2) || instruction::FADD(temp, addr1, temp2);
-        else if (ctx->MOD())
-        code = code ||instruction::FLOAT(temp2,addr2) || instruction::FDIV(temp, addr1, temp2); //TODO: mod!!
+        else if (ctx->MOD()) {
+      		std::string div = "%"+codeCounters.newTEMP();
+      		code = code ||instruction::FLOAT(temp2,addr2) || instruction::FDIV(div, addr1, addr2) || instruction::FMUL(div, div, addr2) || instruction::FSUB(temp, addr1, div);
+    	}  
     }
     else if(!Types.isFloatTy(t1) && Types.isFloatTy(t2)){
         if (ctx->MUL())
@@ -583,8 +576,10 @@ void CodeGenListener::exitArithmetic(AslParser::ArithmeticContext *ctx) {
         code = code ||instruction::FLOAT(temp1,addr1) || instruction::FSUB(temp, temp1, addr2);
         else if (ctx->PLUS())
         code = code ||instruction::FLOAT(temp1,addr1) || instruction::FADD(temp, temp1, addr2);
-        else if (ctx->MOD())
-        code = code ||instruction::FLOAT(temp1,addr1) || instruction::FDIV(temp, temp1, addr2); //TODO: mod!!
+        else if (ctx->MOD()) {
+      		std::string div = "%"+codeCounters.newTEMP();
+      		code = code || instruction::FLOAT(temp2,addr1) || instruction::FDIV(div, addr1, addr2) || instruction::FMUL(div, div, addr2) || instruction::FSUB(temp, addr1, div);
+    	}  
     }
     else{
         if (ctx->MUL())
@@ -595,9 +590,10 @@ void CodeGenListener::exitArithmetic(AslParser::ArithmeticContext *ctx) {
         code = code ||instruction::FSUB(temp, addr1, addr2);
         else if (ctx->PLUS())
         code = code ||instruction::FADD(temp, addr1, addr2);
-        else if (ctx->MOD())
-        code = code ||instruction::FDIV(temp, addr1, addr2); //TODO: mod!!
-        
+        else if (ctx->MOD()) {
+      		std::string div = "%"+codeCounters.newTEMP();
+      		code = code || instruction::FDIV(div, addr1, addr2) || instruction::FMUL(div, div, addr2) || instruction::FSUB(temp, addr1, div);
+    	}    
     }
   }
   else {
@@ -611,9 +607,9 @@ void CodeGenListener::exitArithmetic(AslParser::ArithmeticContext *ctx) {
       code = code || instruction::ADD(temp, addr1, addr2);
     else if (ctx->MOD()) {
       std::string div = "%"+codeCounters.newTEMP();
-      code = code || instruction::DIV(div, addr1, addr2) || instruction::MUL(div, div, addr2) || instruction::SUB(temp, addr1, div); //TODO: mod!!
+      code = code || instruction::DIV(div, addr1, addr2) || instruction::MUL(div, div, addr2) || instruction::SUB(temp, addr1, div);
     }
-    }
+  }
   //cout << "salu2" << "   1: " << addr1 << "   2: " << addr2 << "result temp: " << temp << endl;
   putAddrDecor(ctx, temp);
   putOffsetDecor(ctx, "");
@@ -740,30 +736,52 @@ void CodeGenListener::exitRelational(AslParser::RelationalContext *ctx) {
   std::string     addr2 = getAddrDecor(ctx->expr(1));
   instructionList code2 = getCodeDecor(ctx->expr(1));
   instructionList code  = code1 || code2;
-  // TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
-  // TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
+  TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
   // TypesMgr::TypeId t  = getTypeDecor(ctx);
   std::string temp = "%"+codeCounters.newTEMP();
-  
-  //op=EQUAL|op=NOTEQUAL|op=LESS|op=LESSEQ|op=BIGGER|op=BIGGEREQ
-  //TODO: en code.cpp hay FEQ, FLT, etc...supongo que hay que mirar tambien si son floats
-  if (ctx->EQUAL())
-    code = code || instruction::EQ(temp, addr1, addr2);
-  else if (ctx->NOTEQUAL())
-    code = code || instruction::EQ(temp, addr1, addr2) || instruction::NOT(temp, temp);
-  else if (ctx->LESS())
-    code = code || instruction::LT(temp, addr1, addr2);
-  else if (ctx->LESSEQ()) {
-    std::string tempAux = "%"+codeCounters.newTEMP();
-    code = code || instruction::EQ(tempAux, addr1, addr2)||instruction::LT(temp, addr1, addr2) || instruction::OR(temp, temp, tempAux) ;
+  if (!Types.isFloatTy(t1) && !Types.isFloatTy(t2)){
+	  if (ctx->EQUAL())
+	    code = code || instruction::EQ(temp, addr1, addr2);
+	  else if (ctx->NOTEQUAL())
+	    code = code || instruction::EQ(temp, addr1, addr2) || instruction::NOT(temp, temp);
+	  else if (ctx->LESS())
+	    code = code || instruction::LT(temp, addr1, addr2);
+	  else if (ctx->LESSEQ()) {
+	    std::string tempAux = "%"+codeCounters.newTEMP();
+	    code = code || instruction::EQ(tempAux, addr1, addr2)||instruction::LT(temp, addr1, addr2) || instruction::OR(temp, temp, tempAux) ;
+	  }
+	  else if (ctx->BIGGER()){
+	    std::string tempAux = "%"+codeCounters.newTEMP();
+	    code = code || instruction::EQ(tempAux, addr1, addr2)||instruction::LT(temp, addr1, addr2) || instruction::OR(temp, temp, tempAux) || instruction::NOT(temp, temp)  ;
+	  }
+	  else if (ctx->BIGGEREQ())
+	    code = code || instruction::LT(temp, addr1, addr2) || instruction::NOT(temp, temp);
   }
-  else if (ctx->BIGGER()){
-    std::string tempAux = "%"+codeCounters.newTEMP();
-    code = code || instruction::EQ(tempAux, addr1, addr2)||instruction::LT(temp, addr1, addr2) || instruction::OR(temp, temp, tempAux) || instruction::NOT(temp, temp)  ;
+  else {
+  	std::string tad1 = "%"+codeCounters.newTEMP();
+  	std::string tad2 = "%"+codeCounters.newTEMP();
+  	if(!Types.isFloatTy(t1) && Types.isFloatTy(t2)) code = code || instruction::FLOAT(tad1, addr1) || instruction::FLOAD(tad2, addr2);
+  	else if(Types.isFloatTy(t1) && !Types.isFloatTy(t2)) code = code || instruction::FLOAT(tad2, addr2) || instruction::FLOAD(tad1, addr1);
+  	else code = code || instruction::FLOAD(tad1, addr1) || instruction::FLOAD(tad2, addr2);
+
+  	if (ctx->EQUAL())
+	    code = code || instruction::FEQ(temp, tad1, tad2);
+	  else if (ctx->NOTEQUAL())
+	    code = code || instruction::FEQ(temp, tad1, tad2) || instruction::NOT(temp, temp);
+	  else if (ctx->LESS())
+	    code = code || instruction::FLT(temp, tad1, tad2);
+	  else if (ctx->LESSEQ()) {
+	    std::string tempAux = "%"+codeCounters.newTEMP();
+	    code = code || instruction::FEQ(tempAux, tad1, tad2)||instruction::FLT(temp, tad1, tad2) || instruction::OR(temp, temp, tempAux) ;
+	  }
+	  else if (ctx->BIGGER()){
+	    std::string tempAux = "%"+codeCounters.newTEMP();
+	    code = code || instruction::FEQ(tempAux, tad1, tad2)||instruction::FLT(temp, tad1, tad2) || instruction::OR(temp, temp, tempAux) || instruction::NOT(temp, temp)  ;
+	  }
+	  else if (ctx->BIGGEREQ())
+	    code = code || instruction::FLT(temp, tad1, tad2) || instruction::NOT(temp, temp);
   }
-  else if (ctx->BIGGEREQ())
-    code = code || instruction::LT(temp, addr1, addr2) || instruction::NOT(temp, temp);
-  
   putAddrDecor(ctx, temp);
   putOffsetDecor(ctx, "");
   putCodeDecor(ctx, code);

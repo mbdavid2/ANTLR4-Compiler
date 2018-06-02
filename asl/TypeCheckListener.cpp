@@ -216,7 +216,6 @@ void TypeCheckListener::enterLeft_expr(AslParser::Left_exprContext *ctx) {
 void TypeCheckListener::exitLeft_expr(AslParser::Left_exprContext *ctx) {
   /*if (ctx->ident()) std::cout << "Left Expr Ident    " << std::endl;
   if (ctx->array_access()) std::cout << "Left Expr Array    " << std::endl;*/
-  //TODO: dsadas
   TypesMgr::TypeId t1;
   bool b;
   if (ctx->ident()) {
@@ -392,7 +391,6 @@ void TypeCheckListener::exitArrayAccess(AslParser::ArrayAccessContext *ctx) {
   //that we're accessing an array type)
 
   //Check ident
-  //TODO: dsadas
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
   //Types.dump(t1);
   if (not Types.isErrorTy(t1)) {
@@ -435,8 +433,6 @@ void TypeCheckListener::exitIdent(AslParser::IdentContext *ctx) {
 }
 
 ///////FUNC CALL////////
-//TODO: comprovaciones de parametros y tal?
-
 void TypeCheckListener::enterProcCall(AslParser::ProcCallContext *ctx) {
   DEBUG_ENTER();
 }
@@ -450,7 +446,7 @@ void TypeCheckListener::exitProcCall(AslParser::ProcCallContext *ctx) {
 	  }
 	  else {
 	  	TypesMgr::TypeId tRet = Types.getFuncReturnType(t1);
-	    std::vector<TypesMgr::TypeId> lParamsTy = Types.getFuncParamsTypes(t1); //TODO: feed me pls
+	    std::vector<TypesMgr::TypeId> lParamsTy = Types.getFuncParamsTypes(t1);
 	    int i = 0;
 	    for(auto eCtx : ctx -> funcCall()->expr()) i++;
 	    if (i != lParamsTy.size()) Errors.numberOfParameters(ctx);
@@ -485,7 +481,7 @@ void TypeCheckListener::exitExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
 	  }
 	  else {
 	  	TypesMgr::TypeId tRet = Types.getFuncReturnType(t1);
-	    std::vector<TypesMgr::TypeId> lParamsTy = Types.getFuncParamsTypes(t1); //TODO: feed me pls
+	    std::vector<TypesMgr::TypeId> lParamsTy = Types.getFuncParamsTypes(t1);
 	    int i = 0;
 	    for(auto eCtx : ctx -> expr()) i++;
 	    if (i != lParamsTy.size()) Errors.numberOfParameters(ctx);

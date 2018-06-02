@@ -1,39 +1,29 @@
 function main
   vars
+    x 10
+    peta 10
     a 1
     b 1
     f 1
   endvars
 
-     %1 = 1.0
-     %2 = 2
-     %5 = float %2
-     %3 = %1 /. %5
-     %6 = 3
-     %7 = - %6
-     %8 = %3
-     %9 = %7
-     %16 = 0
-     %13 = %7 < %16
-     ifFalse %13 goto salu21
-     %9 = - %9
-  label salu21 :
-     %14 = 1
-     %10 = 0
-     %11 = 1.0
-  label startwhile1 :
-     %12 = %10 < %9
-     ifFalse %12 goto endwhile1
-     %11 = %11 *. %8
-     %10 = %10 + %14
-     goto startwhile1
-  label endwhile1 :
-     ifFalse %13 goto salu2_tokyo_drift2
-     %15 = 1.0
-     %11 = %15 /. %11
-  label salu2_tokyo_drift2 :
-     f = %11
+     %1 = 4
+     %2 = 1
+     peta[%1] = %2
+     %3 = 5
+     %4 = 0
+     peta[%3] = %4
+     %5 = 2312
+     %5 = float %5
+     f = %5
+     %6 = 5
+     %7 = peta[%6]
+     %8 = 4
+     %9 = peta[%8]
+     %10 = %7 or %9
+     ifFalse %10 goto endif1
      writef f
+  label endif1 :
      writeln
      return
 endfunction
