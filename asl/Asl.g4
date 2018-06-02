@@ -98,6 +98,7 @@ left_expr
 expr    : (op=NOT | op=PLUS | op=MINUS) expr  # unary
         | '(' expr ')'                        # parenthesis
         | expr (op=MUL| op=DIV |op=MOD) expr   # arithmetic
+        | expr op=POW expr                    #arithmeticPow
         | expr (op=PLUS|op=MINUS) expr        # arithmetic
         | expr (op=EQUAL|op=NOTEQUAL|op=LESS|op=LESSEQ|op=BIGGER|op=BIGGEREQ) expr                  # relational
         | expr (op=AND|op=OR) expr            # binaryop
@@ -138,6 +139,7 @@ PLUS      : '+' ;
 MINUS     : '-';
 MUL       : '*';
 DIV       : '/';
+POW       : '^';
 MOD       : '%';
 VAR       : 'var';
 FLOAT     : 'float';

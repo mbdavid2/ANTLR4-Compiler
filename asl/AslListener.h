@@ -89,6 +89,9 @@ public:
   virtual void enterExprArrayAccess(AslParser::ExprArrayAccessContext *ctx) = 0;
   virtual void exitExprArrayAccess(AslParser::ExprArrayAccessContext *ctx) = 0;
 
+  virtual void enterArithmeticPow(AslParser::ArithmeticPowContext *ctx) = 0;
+  virtual void exitArithmeticPow(AslParser::ArithmeticPowContext *ctx) = 0;
+
   virtual void enterExprFuncCall(AslParser::ExprFuncCallContext *ctx) = 0;
   virtual void exitExprFuncCall(AslParser::ExprFuncCallContext *ctx) = 0;
 

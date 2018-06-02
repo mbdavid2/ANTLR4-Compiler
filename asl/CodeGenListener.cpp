@@ -609,11 +609,65 @@ void CodeGenListener::exitArithmetic(AslParser::ArithmeticContext *ctx) {
       code = code || instruction::SUB(temp, addr1, addr2);
     else if (ctx->PLUS())
       code = code || instruction::ADD(temp, addr1, addr2);
-    else if (ctx->MOD())
-      code = code || instruction::DIV(temp, addr1, addr2); //TODO: mod!!
-  }
+    else if (ctx->MOD()) {
+      std::string div = "%"+codeCounters.newTEMP();
+      code = code || instruction::DIV(div, addr1, addr2) || instruction::MUL(div, div, addr2) || instruction::SUB(temp, addr1, div); //TODO: mod!!
+    }
+    }
   //cout << "salu2" << "   1: " << addr1 << "   2: " << addr2 << "result temp: " << temp << endl;
   putAddrDecor(ctx, temp);
+  putOffsetDecor(ctx, "");
+  putCodeDecor(ctx, code);
+  DEBUG_EXIT();
+}
+
+void CodeGenListener::enterArithmeticPow(AslParser::ArithmeticPowContext *ctx) {
+  DEBUG_ENTER();
+}
+void CodeGenListener::exitArithmeticPow(AslParser::ArithmeticPowContext *ctx) {
+  std::string     addr1 = getAddrDecor(ctx->expr(0));
+  instructionList code1 = getCodeDecor(ctx->expr(0));
+  std::string     addr2 = getAddrDecor(ctx->expr(1));
+  instructionList code2 = getCodeDecor(ctx->expr(1));
+  instructionList code  = code1 || code2;
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
+  TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
+  //TypesMgr::TypeId t  = getTypeDecor(ctx);
+  std::string temp = "%"+codeCounters.newTEMP();
+  std::string abs = "%"+codeCounters.newTEMP();
+  //cout << "salu2" << "   1: " << addr1 << "   2: " << addr2 << endl;
+  std::string i = "%"+codeCounters.newTEMP();
+  std::string result = "%"+codeCounters.newTEMP();
+  std::string cond = "%"+codeCounters.newTEMP();
+  std::string divCond = "%"+codeCounters.newTEMP();
+  std::string UNO = "%"+codeCounters.newTEMP();
+  std::string IsThisAFloat = "%"+codeCounters.newTEMP();
+  std::string ZERO = "%"+codeCounters.newTEMP();  
+
+  std::string label = codeCounters.newLabelWHILE();
+  std::string labelEndWhile = "endwhile"+label;
+  std::string labelStartWhile = "startwhile"+label;
+  std::string ISPOS = "salu2"+codeCounters.newLabelIF();
+  std::string end = "salu2_tokyo_drift"+codeCounters.newLabelIF();
+  
+  if(!Types.isFloatTy(t1))
+        code = code ||instruction::FLOAT(temp,addr1);
+  else 
+      code = code || instruction::FLOAD(temp, addr1);
+  
+  code = code || instruction::ILOAD(abs,addr2) ||instruction::ILOAD(ZERO,"0") || instruction::LT(divCond, addr2, ZERO) 
+  || instruction::FJUMP(divCond,ISPOS) || instruction::NEG(abs,abs);
+
+  
+  code = code || instruction::LABEL(ISPOS) || instruction::ILOAD(UNO,"1") || instruction::ILOAD(i,"0") || instruction::FLOAD(result, "1.0");
+  code = code || instruction::LABEL(labelStartWhile) || instruction::LT(cond, i, abs)
+  ||  instruction::FJUMP(cond, labelEndWhile) || instruction::FMUL(result, result, temp) 
+  || instruction::ADD(i, i, UNO) || instruction::UJUMP(labelStartWhile) || instruction::LABEL(labelEndWhile) || instruction::FJUMP(divCond, end)
+  ||  instruction::FLOAD(IsThisAFloat,"1.0") || instruction::FDIV(result, IsThisAFloat, result) || instruction::LABEL(end);
+
+  
+  //cout << "salu2" << "   1: " << addr1 << "   2: " << addr2 << "result temp: " << temp << endl;
+  putAddrDecor(ctx, result);
   putOffsetDecor(ctx, "");
   putCodeDecor(ctx, code);
   DEBUG_EXIT();

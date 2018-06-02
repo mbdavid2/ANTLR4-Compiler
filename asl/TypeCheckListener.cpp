@@ -288,6 +288,27 @@ void TypeCheckListener::exitArithmetic(AslParser::ArithmeticContext *ctx) {
   DEBUG_EXIT();
 }
 
+void TypeCheckListener::enterArithmeticPow(AslParser::ArithmeticPowContext *ctx) {
+  DEBUG_ENTER();
+}
+void TypeCheckListener::exitArithmeticPow(AslParser::ArithmeticPowContext *ctx) {
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
+  TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
+
+  /*cout << endl << "arithmetic op:          ";
+  Types.dump(t1); cout << "   op   "; Types.dump(t2);cout << endl;*/
+  if (((not Types.isErrorTy(t1)) and (not Types.isNumericTy(t1))) or
+      ((not Types.isErrorTy(t2)) and (not Types.isIntegerTy(t2))))
+    Errors.incompatibleOperator(ctx->op);
+
+  TypesMgr::TypeId t;
+  t = Types.createFloatTy();
+  
+  putTypeDecor(ctx, t);
+  putIsLValueDecor(ctx, false);
+  DEBUG_EXIT();
+}
+
 void TypeCheckListener::enterBinaryop(AslParser::BinaryopContext *ctx) {
   DEBUG_ENTER();
 }

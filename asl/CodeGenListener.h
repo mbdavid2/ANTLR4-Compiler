@@ -118,6 +118,9 @@ public:
 
   void enterArithmetic(AslParser::ArithmeticContext *ctx);
   void exitArithmetic(AslParser::ArithmeticContext *ctx);
+ 
+  void enterArithmeticPow(AslParser::ArithmeticPowContext *ctx);
+  void exitArithmeticPow(AslParser::ArithmeticPowContext *ctx);
   
   void enterBinaryop(AslParser::BinaryopContext *ctx);
   void exitBinaryop(AslParser::BinaryopContext *ctx);

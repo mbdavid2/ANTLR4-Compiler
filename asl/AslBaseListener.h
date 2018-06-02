@@ -91,6 +91,9 @@ public:
   virtual void enterExprArrayAccess(AslParser::ExprArrayAccessContext * /*ctx*/) override { }
   virtual void exitExprArrayAccess(AslParser::ExprArrayAccessContext * /*ctx*/) override { }
 
+  virtual void enterArithmeticPow(AslParser::ArithmeticPowContext * /*ctx*/) override { }
+  virtual void exitArithmeticPow(AslParser::ArithmeticPowContext * /*ctx*/) override { }
+
   virtual void enterExprFuncCall(AslParser::ExprFuncCallContext * /*ctx*/) override { }
   virtual void exitExprFuncCall(AslParser::ExprFuncCallContext * /*ctx*/) override { }
 
