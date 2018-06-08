@@ -143,12 +143,31 @@ void CodeGenListener::exitExprArrayAccess(AslParser::ExprArrayAccessContext *ctx
 	std::string addr = getAddrDecor(ctx->array_access());
 	instructionList code = getCodeDecor(ctx->array_access());
 	std::string temp = "%"+codeCounters.newTEMP();
-	code = code || instruction::ILOAD(temp, addr); //TODO: esto tendriamos que contemplar
+	code = code || instruction::LOAD(temp, addr); //TODO: esto tendriamos que contemplar
 	//el caso de que el array es de floats tambien no?
 	putAddrDecor(ctx, temp);
 	putOffsetDecor(ctx, "");
 	putCodeDecor(ctx, code);
 	DEBUG_EXIT();
+    
+    /*std::string ident = ctx->array_access()->ident()->getText();
+	std::string index = getAddrDecor(ctx->array_access()->expr());
+	instructionList code = getCodeDecor(ctx->arrayAccess()->expr());
+	std::string arrayAcces;
+	bool param = Symbols.isParameterClass(ident);
+    std::string temp = "%"+codeCounters.newTEMP();
+    if (param) { 
+        std::string tempIdent = "%"+codeCounters.newTEMP();
+        code = code || instruction::LOAD(tempIdent, ident);
+		code = code || instruction::LOADX(temp, tempIdent, index);
+	}
+	else {
+        code = code || instruction::LOADX(temp, ident, index);
+    }
+	putAddrDecor(ctx, temp);
+    putOffsetDecor(ctx, "");
+	putCodeDecor(ctx, code);
+	DEBUG_EXIT();*/
 }
 
 void CodeGenListener::enterExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
@@ -176,8 +195,8 @@ void CodeGenListener::exitExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
         TypesMgr::TypeId tParam = Types.getParameterType(tFunc,i);
         std::string conversionTemp = "%"+codeCounters.newTEMP();
         if (Types.isArrayTy(tExpr)) {
-           string temporal = "&" + addr;
-           code = code || instruction::LOAD(conversionTemp, temporal);
+           //string temporal = "&" + addr;
+           code = code || instruction::ALOAD(conversionTemp, addr);
            pushes = pushes || instruction::PUSH(conversionTemp);
         }
         else if (Types.isIntegerTy(tExpr) && Types.isFloatTy(tParam)) {
@@ -364,7 +383,7 @@ void CodeGenListener::exitAssignStmt(AslParser::AssignStmtContext *ctx) {
     code = code1 || code2 || instruction::ILOAD(addr1, addr2);
   }
   else if (Types.isCharacterTy(tid1)) {
-    code = code1 || code2 || instruction::CHLOAD(addr1, addr2);
+    code = code1 || code2 || instruction::LOAD(addr1, addr2);
   }
   else if (Types.isBooleanTy(tid1)) {
     code = code1 || code2 || instruction::ILOAD(addr1, addr2);
@@ -446,7 +465,7 @@ void CodeGenListener::exitReadStmt(AslParser::ReadStmtContext *ctx) {
   	code = code1 || instruction::READF(temp) || instruction::FLOAD(addr1, temp);
   }
   else if (Types.isCharacterTy(tid1)) {
-  	code = code1 || instruction::READC(temp) || instruction::CHLOAD(addr1, temp);
+  	code = code1 || instruction::READC(temp) || instruction::LOAD(addr1, temp);
   }
   //else code = code1 || instruction::READI(temp) || instruction::ILOAD(addr1, temp);
   putCodeDecor(ctx, code);
@@ -807,7 +826,7 @@ void CodeGenListener::exitValue(AslParser::ValueContext *ctx) {
   	code = instruction::FLOAD(temp, ctx->getText());
   }
   else if (ctx->CHARVAL()) {
-  	code = instruction::CHLOAD(temp, ctx->getText());
+  	code = instruction::LOAD(temp, ctx->getText());
   }
   putAddrDecor(ctx, temp);
   putOffsetDecor(ctx, "");
