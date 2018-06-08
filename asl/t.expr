@@ -1,6 +1,0 @@
-func main()
- var a : int
- while a > 0 do
-  a = a + 1;
- endwhile 
-endfunc

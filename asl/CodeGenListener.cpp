@@ -81,7 +81,6 @@ void CodeGenListener::exitFunction(AslParser::FunctionContext *ctx) {
   if (ctx->parameters() != NULL) {
     for(auto eCtx : ctx->parameters()->ID()) {
 	    subrRef.add_param(eCtx->getText());
-	    TypesMgr::TypeId tid1 = Symbols.getType(eCtx->getText());
     } 
   }
 
@@ -99,7 +98,7 @@ void CodeGenListener::exitFunction(AslParser::FunctionContext *ctx) {
   		code = code || codeExp || instruction::FLOAD("_result", ret);
   	}
   	else if (Types.isCharacterTy(tid1)) {
-  		code = code || codeExp || instruction::CHLOAD("_result", ret);
+  		code = code || codeExp || instruction::LOAD("_result", ret);
   	}
    	putAddrDecor(ctx, ret);
   }
@@ -175,7 +174,7 @@ void CodeGenListener::enterExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
 }
     
 void CodeGenListener::exitExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
-    std:string nameFunc = ctx->ident()->getText();
+    std::string nameFunc = ctx->ident()->getText();
     //cout << "func call nombre: " << nameFunc << endl;
     instructionList code;
     instructionList pushes;
@@ -224,8 +223,7 @@ void CodeGenListener::enterProcCall(AslParser::ProcCallContext *ctx) {
   DEBUG_ENTER();
 }
 void CodeGenListener::exitProcCall(AslParser::ProcCallContext *ctx) {
-
-    std:string nameFunc = ctx->funcCall()->ident()->getText();
+    std::string nameFunc = ctx->funcCall()->ident()->getText();
     //cout << "proc call nombre: " << nameFunc << endl;
     instructionList code;
     instructionList pushes;
@@ -310,7 +308,7 @@ void CodeGenListener::exitReturnExpr(AslParser::ReturnExprContext *ctx) {
       code = code || instruction::FLOAD("_result", ret);
     }
     else if (Types.isCharacterTy(tid1)) {
-      code = code || instruction::CHLOAD("_result", ret);
+      code = code || instruction::LOAD("_result", ret);
     }
     putAddrDecor(ctx, ret);
   }
@@ -646,7 +644,7 @@ void CodeGenListener::exitArithmeticPow(AslParser::ArithmeticPowContext *ctx) {
   instructionList code2 = getCodeDecor(ctx->expr(1));
   instructionList code  = code1 || code2;
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
-  TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
+  //TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
   //TypesMgr::TypeId t  = getTypeDecor(ctx);
   std::string temp = "%"+codeCounters.newTEMP();
   std::string abs = "%"+codeCounters.newTEMP();

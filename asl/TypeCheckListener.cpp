@@ -447,7 +447,7 @@ void TypeCheckListener::exitProcCall(AslParser::ProcCallContext *ctx) {
 	  else {
 	  	TypesMgr::TypeId tRet = Types.getFuncReturnType(t1);
 	    std::vector<TypesMgr::TypeId> lParamsTy = Types.getFuncParamsTypes(t1);
-	    int i = 0;
+	    unsigned int i = 0;
 	    for(auto eCtx : ctx -> funcCall()->expr()) i++;
 	    if (i != lParamsTy.size()) Errors.numberOfParameters(ctx);
 		else {
