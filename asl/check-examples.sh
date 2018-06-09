@@ -84,3 +84,19 @@ for f in ../examples/jp_genc_*.asl; do
     rm -f tmp.t tmp.out
 done
 echo "END   examples-full/execution"
+
+echo ""
+echo "BEGIN examples-Extra"
+for f in ../examples/extra/test_*.asl; do
+    echo $(basename "$f")
+    ./asl "$f" > tmp.t
+    ../tvm/tvm tmp.t < "${f/asl/in}" > tmp.out
+    #diff tmp.out "${f/asl/out}"
+    if ! (diff tmp.out "${f/asl/out}") &>/dev/null; then
+    >&2
+    diff tmp.out "${f/asl/out}"
+    exit 1 
+    fi
+    rm -f tmp.t tmp.out
+done
+echo "END   examples-Extra"

@@ -77,15 +77,17 @@ void CodeGenListener::enterFunction(AslParser::FunctionContext *ctx) {
 void CodeGenListener::exitFunction(AslParser::FunctionContext *ctx) {
   subroutine & subrRef = Code.get_last_subroutine();
   instructionList code = getCodeDecor(ctx->statements());
-  if (ctx->type() != NULL) subrRef.add_param("_result");
+  //if (ctx->type() != NULL) 
+  std::string nameFunc = ctx->ID()->getText();
+  if (nameFunc != "main") subrRef.add_param("_result");
   if (ctx->parameters() != NULL) {
     for(auto eCtx : ctx->parameters()->ID()) {
 	    subrRef.add_param(eCtx->getText());
     } 
   }
-
+  std::string ret;
   if (ctx->type() != NULL) {
-	  std::string ret = getAddrDecor(ctx->expr());
+	  ret = getAddrDecor(ctx->expr());
   	instructionList codeExp = getCodeDecor(ctx->expr());
   	TypesMgr::TypeId tid1 = getTypeDecor(ctx->expr());
   	if (Types.isBooleanTy(tid1)) {
@@ -100,8 +102,8 @@ void CodeGenListener::exitFunction(AslParser::FunctionContext *ctx) {
   	else if (Types.isCharacterTy(tid1)) {
   		code = code || codeExp || instruction::LOAD("_result", ret);
   	}
-   	putAddrDecor(ctx, ret);
   }
+  putAddrDecor(ctx, ret);
   code = code || instruction::RETURN();
   subrRef.set_instructions(code);
   Symbols.popScope();
@@ -223,21 +225,66 @@ void CodeGenListener::enterProcCall(AslParser::ProcCallContext *ctx) {
   DEBUG_ENTER();
 }
 void CodeGenListener::exitProcCall(AslParser::ProcCallContext *ctx) {
-    std::string nameFunc = ctx->funcCall()->ident()->getText();
-    //cout << "proc call nombre: " << nameFunc << endl;
+      std::string nameFunc = ctx->funcCall()->ident()->getText();
+    //cout << "func call nombre: " << nameFunc << endl;
     instructionList code;
     instructionList pushes;
-
+    std::string temp = "%ret"+codeCounters.newTEMP();
+    code = code || instruction::ILOAD(temp, "0"); //esto es simplemente para "declarar" el temp este
+    //donde se guardara el resultado
     std::string addr;
     instructionList codeExp;
-    int i = 0;
     pushes = instruction::PUSH("");
+    int i = 0;
     for(auto eCtx : ctx->funcCall()->expr()) {
         addr = getAddrDecor(eCtx);
         codeExp = getCodeDecor(eCtx);
         code = code || codeExp;
         TypesMgr::TypeId tExpr = getTypeDecor(eCtx);
         TypesMgr::TypeId tFunc = Symbols.getType(nameFunc);
+        TypesMgr::TypeId tParam = Types.getParameterType(tFunc,i);
+        std::string conversionTemp = "%"+codeCounters.newTEMP();
+        if (Types.isArrayTy(tExpr)) {
+           //string temporal = "&" + addr;
+           code = code || instruction::ALOAD(conversionTemp, addr);
+           pushes = pushes || instruction::PUSH(conversionTemp);
+        }
+        else if (Types.isIntegerTy(tExpr) && Types.isFloatTy(tParam)) {
+          code = code || instruction::FLOAT(conversionTemp, addr);
+          pushes = pushes || instruction::PUSH(conversionTemp); 
+        }
+        else pushes = pushes || instruction::PUSH(addr); 
+        i++;
+    }      
+    code = code || pushes || instruction::CALL(nameFunc);
+    instructionList pops;
+    for(auto eCtx : ctx ->funcCall() -> expr()) {
+        std::string addr1; // = getAddrDecor(eCtx);
+        pops = pops || instruction::POP(addr1);        
+    }
+    //temp = "ret"+codeCounters.newTEMP();
+    code = code || pops || instruction::POP(temp);
+    putAddrDecor(ctx, temp);
+    putOffsetDecor(ctx, "");
+    putCodeDecor(ctx, code);
+    DEBUG_EXIT();
+    /*std::string nameFunc = ctx->funcCall()->ident()->getText();
+    //cout << "proc call nombre: " << nameFunc << endl;
+    instructionList code;
+    instructionList pushes;
+    TypesMgr::TypeId tFunc = Symbols.getType(nameFunc);
+    TypesMgr::TypeId tRet = Types.getFuncReturnType(tFunc);
+    bool funcReturns = !Types.isVoidTy(tRet);
+    std::string addr;
+    instructionList codeExp;
+    int i = 0;
+    //if (funcReturns) 
+    pushes = instruction::PUSH("");
+    for(auto eCtx : ctx->funcCall()->expr()) {
+        addr = getAddrDecor(eCtx);
+        codeExp = getCodeDecor(eCtx);
+        code = code || codeExp;
+        TypesMgr::TypeId tExpr = getTypeDecor(eCtx);
         TypesMgr::TypeId tParam = Types.getParameterType(tFunc,i);
         std::string conversionTemp = "%"+codeCounters.newTEMP();
         if (Types.isIntegerTy(tExpr) && Types.isFloatTy(tParam)) {
@@ -253,12 +300,14 @@ void CodeGenListener::exitProcCall(AslParser::ProcCallContext *ctx) {
         std::string addr1; // = getAddrDecor(eCtx);
         pops = pops || instruction::POP(addr1);        
     }
+    code = code || pops;
     //temp = "ret"+codeCounters.newTEMP();
-    code = code || pops || instruction::POP("");
+    //if (funcReturns)  
+    code = code || instruction::POP("");
     //putAddrDecor(ctx, temp);
   	putOffsetDecor(ctx, "");
     putCodeDecor(ctx, code);
-  DEBUG_EXIT();
+  DEBUG_EXIT();*/
 }
 
 void CodeGenListener::enterFuncCall(AslParser::FuncCallContext * ctx) {
@@ -312,6 +361,7 @@ void CodeGenListener::exitReturnExpr(AslParser::ReturnExprContext *ctx) {
     }
     putAddrDecor(ctx, ret);
   }
+  code = code || instruction::RETURN();
 	putAddrDecor(ctx, ret);
   putOffsetDecor(ctx, "");
   putCodeDecor(ctx, code);
