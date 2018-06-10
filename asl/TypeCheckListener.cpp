@@ -138,6 +138,13 @@ void TypeCheckListener::enterAssignStmt(AslParser::AssignStmtContext *ctx) {
   DEBUG_ENTER();
 }
 void TypeCheckListener::exitAssignStmt(AslParser::AssignStmtContext *ctx) {
+  DEBUG_EXIT();
+}
+
+void TypeCheckListener::enterAssignSt(AslParser::AssignStContext *ctx) {
+  DEBUG_ENTER();
+}
+void TypeCheckListener::exitAssignSt(AslParser::AssignStContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->left_expr());
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr());
   /*cout << endl << "assignment:      ";
@@ -177,6 +184,31 @@ void TypeCheckListener::exitWhileStmt(AslParser::WhileStmtContext *ctx) {
 
   if ((not Types.isErrorTy(t1)) and (not Types.isBooleanTy(t1)))
     Errors.booleanRequired(ctx);
+  DEBUG_EXIT();
+}
+
+void TypeCheckListener::enterForBlock(AslParser::ForBlockContext *ctx) {
+  DEBUG_ENTER();
+}
+
+void TypeCheckListener::exitForBlock(AslParser::ForBlockContext *ctx) {
+  /*TypesMgr::TypeId t1 = getTypeDecor(ctx->expr());
+
+  if ((not Types.isErrorTy(t1)) and (not Types.isBooleanTy(t1)))
+    Errors.booleanRequired(ctx);*/
+  DEBUG_EXIT();
+}
+
+void TypeCheckListener::enterForStmt(AslParser::ForStmtContext *ctx) {
+  DEBUG_ENTER();
+}
+
+void TypeCheckListener::exitForStmt(AslParser::ForStmtContext *ctx) {
+  //Conditional
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->expr());
+  if ((not Types.isErrorTy(t1)) and (not Types.isBooleanTy(t1)))
+    Errors.booleanRequired(ctx);
+
   DEBUG_EXIT();
 }
 

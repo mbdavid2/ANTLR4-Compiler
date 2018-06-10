@@ -412,6 +412,15 @@ void CodeGenListener::enterAssignStmt(AslParser::AssignStmtContext *ctx) {
   DEBUG_ENTER();
 }
 void CodeGenListener::exitAssignStmt(AslParser::AssignStmtContext *ctx) {
+  instructionList  code = getCodeDecor(ctx->assignSt());
+  putCodeDecor(ctx, code);
+  DEBUG_EXIT();
+}
+
+void CodeGenListener::enterAssignSt(AslParser::AssignStContext *ctx) {
+  DEBUG_ENTER();
+}
+void CodeGenListener::exitAssignSt(AslParser::AssignStContext *ctx) {
   instructionList  code;
   std::string     addr1 = getAddrDecor(ctx->left_expr());
   // std::string     offs1 = getOffsetDecor(ctx->left_expr());
@@ -489,6 +498,52 @@ void CodeGenListener::exitWhileStmt(AslParser::WhileStmtContext *ctx) {
          
          
   putCodeDecor(ctx, code);
+  DEBUG_EXIT();
+}
+
+void CodeGenListener::enterForBlock(AslParser::ForBlockContext *ctx) {
+  DEBUG_ENTER();
+}
+
+void CodeGenListener::exitForBlock(AslParser::ForBlockContext *ctx) {
+  instructionList   code;
+
+  //Boolean conditional
+  instructionList  codeBool = getCodeDecor(ctx->forStmt()->expr());
+  std::string      addrBool = getAddrDecor(ctx->forStmt()->expr());
+
+  //Initial assignment
+  instructionList  codeInit = getCodeDecor(ctx->forStmt()->assignSt(0));
+
+  //Inner loop statements
+  instructionList  codeStmt = getCodeDecor(ctx->statements());
+
+  //Iteration assignment
+  instructionList  codeAssig = getCodeDecor(ctx->forStmt()->assignSt(1));
+  
+  std::string label = codeCounters.newLabelWHILE(); 
+  //USES THE SAME COUNTER AS WHILE!!! No problems but lame
+  
+  std::string labelEndFor = "endfor"+label;
+  std::string labelStartFor = "startfor"+label;
+  
+  
+  code = codeInit || instruction::LABEL(labelStartFor) || codeBool 
+      || instruction::FJUMP(addrBool, labelEndFor) 
+      || codeStmt || codeAssig || instruction::UJUMP(labelStartFor) 
+      || instruction::LABEL(labelEndFor);
+         
+         
+  putCodeDecor(ctx, code);
+  DEBUG_EXIT();
+  DEBUG_EXIT();
+}
+
+void CodeGenListener::enterForStmt(AslParser::ForStmtContext *ctx) {
+  DEBUG_ENTER();
+}
+
+void CodeGenListener::exitForStmt(AslParser::ForStmtContext *ctx) {
   DEBUG_EXIT();
 }
 

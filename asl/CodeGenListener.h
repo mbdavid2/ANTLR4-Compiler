@@ -89,6 +89,9 @@ public:
   void enterAssignStmt(AslParser::AssignStmtContext *ctx);
   void exitAssignStmt(AslParser::AssignStmtContext *ctx);
 
+  void enterAssignSt(AslParser::AssignStContext *ctx);
+  void exitAssignSt(AslParser::AssignStContext *ctx);
+
   void enterIfStmt(AslParser::IfStmtContext *ctx);
   void exitIfStmt(AslParser::IfStmtContext *ctx);
   
@@ -136,6 +139,12 @@ public:
   
   void enterUnary(AslParser::UnaryContext *ctx);
   void exitUnary(AslParser::UnaryContext *ctx);
+
+  void enterForStmt(AslParser::ForStmtContext *ctx);
+  void exitForStmt(AslParser::ForStmtContext *ctx);
+
+  void enterForBlock(AslParser::ForBlockContext *ctx);
+  void exitForBlock(AslParser::ForBlockContext *ctx);
 
   void enterExprIdent(AslParser::ExprIdentContext *ctx);
   void exitExprIdent(AslParser::ExprIdentContext *ctx);

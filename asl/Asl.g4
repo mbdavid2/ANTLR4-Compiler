@@ -72,9 +72,10 @@ statements
 // The different types of instructions
 statement
           // Assignment
-        : left_expr ASSIGN expr ';'           # assignStmt
+        : assignSt ';'         #assignStmt
           // while statement endwhile
         | WHILE expr DO statements ENDWHILE   #whileStmt
+        | FOR '(' forStmt ')' ':' statements ENDFOR   #forBlock
           // if-then-else statement (else is optional)
         | IF expr THEN statements (ELSE statements)?  ENDIF       # ifStmt
           // A function/procedure call has a list of arguments in parenthesis (possibly empty)
@@ -87,6 +88,10 @@ statement
         | WRITE STRING ';'                    # writeString
         | RETURN (expr)? ';'                  # returnExpr
         ;
+
+forStmt: assignSt ';' expr ';' assignSt;
+
+assignSt: left_expr ASSIGN expr;
 
 // Grammar for left expressions (l-values in C++)
 left_expr   
@@ -155,6 +160,8 @@ ELSE      : 'else' ;
 ENDIF     : 'endif' ;
 WHILE     : 'while';
 ENDWHILE  : 'endwhile';
+FOR       : 'for';
+ENDFOR    : 'endfor';
 DO        : 'do';
 FUNC      : 'func' ;
 ENDFUNC   : 'endfunc' ;

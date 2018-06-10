@@ -1,128 +1,85 @@
-function fz
+function search
   params
-    r
-    arr
-    ch
-    lit
+    _result
+    needle
+    stack
   endparams
 
-   %1 = 3
-   %2 = arr
-   %3 = %2[%1]
-   writec %3
-   writeln
-   writec ch
-   writeln
-   %6 = 'C'
-   writec %6
-   %6 = 'H'
-   writec %6
-   %6 = 'L'
-   writec %6
-   %6 = 'O'
-   writec %6
-   %6 = 'A'
-   writec %6
-   %6 = 'D'
-   writec %6
-   %6 = ' '
-   writec %6
-   %6 = 'S'
-   writec %6
-   %6 = 'O'
-   writec %6
-   %6 = 'N'
-   writec %6
-   %6 = ' '
-   writec %6
-   %6 = 'L'
-   writec %6
-   %6 = 'O'
-   writec %6
-   %6 = 'S'
-   writec %6
-   %6 = ' '
-   writec %6
-   %6 = 'P'
-   writec %6
-   %6 = 'A'
-   writec %6
-   %6 = 'D'
-   writec %6
-   %6 = 'R'
-   writec %6
-   %6 = 'E'
-   writec %6
-   %6 = 'S'
-   writec %6
-   writeln
-   %8 = 3
-   %9 = arr
-   %10 = 'y'
-   %9[%8] = %10
-   return
+  vars
+    i 1
+  endvars
+
+     %1 = 0
+     i = %1
+  label startfor1 :
+     %2 = 10
+     %3 = i < %2
+     ifFalse %3 goto endfor1
+     %6 = stack
+     %7 = %6[i]
+     %8 = %7 == needle
+     ifFalse %8 goto endif1
+     _result = i
+     return
+  label endif1 :
+     %4 = 1
+     %5 = i + %4
+     i = %5
+     goto startfor1
+  label endfor1 :
+     %9 = 1
+     %10 = - %9
+     _result = %10
+     return
 endfunction
 
 function main
   vars
-    x 10
-    peta 10
-    a 1
-    b 1
-    f 1
-    c 1
+    arr 10
+    i 1
+    find 1
   endvars
 
-     %1 = 4
-     %2 = 1
-     peta[%1] = %2
-     %3 = 5
+     %1 = 0
+     i = %1
+  label startfor1 :
+     %2 = 10
+     %3 = i < %2
+     ifFalse %3 goto endfor1
+     readi %6
+     arr[i] = %6
      %4 = 1
-     peta[%3] = %4
-     %5 = 3
-     readc %6
-     x[%5] = %6
-     %7 = 6
-     %8 = 3
-     %9 = x[%8]
-     %10 = 'z'
-     %11 = %9 == %10
-     peta[%7] = %11
-     %12 = 2312
-     f = %12
-     %13 = 5
-     %14 = peta[%13]
-     %15 = 4
-     %16 = peta[%15]
-     %17 = %14 and %16
-     %18 = 6
-     %19 = peta[%18]
-     %20 = %17 or %19
-     ifFalse %20 goto else2
-     %21 = 0
-     %22 = 3
-     %23 = x[%22]
-     %24 = 'e'
+     %5 = i + %4
+     i = %5
+     goto startfor1
+  label endfor1 :
+     readi %7
+     find = %7
+     %ret8 = 0
+     %10 = &arr
      pushparam 
-     pushparam %21
-     pushparam x
-     pushparam %23
-     pushparam %24
-     call fz
+     pushparam find
+     pushparam %10
+     call search
      popparam 
      popparam 
-     popparam 
-     popparam 
-     popparam 
-     %29 = 3
-     %30 = x[%29]
-     writec %30
-     writeln
-     goto endif1
-  label else2 :
-     %32 = 'u'
-     writec %32
-  label endif1 :
+     popparam %ret8
+     i = %ret8
+     %11 = 'I'
+     writec %11
+     %11 = 'n'
+     writec %11
+     %11 = 'd'
+     writec %11
+     %11 = 'e'
+     writec %11
+     %11 = 'x'
+     writec %11
+     %11 = ':'
+     writec %11
+     %11 = ' '
+     writec %11
+     writei i
      writeln
      return
 endfunction
