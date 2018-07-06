@@ -61,6 +61,38 @@ endfunc
 
 The check-examples.sh bash script tests all the examples.
 
+To write and test your own program do (if you're inside the "asl" folder):
+
+```
+./asl < inputProgram.asl > code.t
+```
+
+To generate the 3 adress code that will look like this:
+
+```
+[...]
+
+function main
+  vars
+    i 1
+  endvars
+
+     %1 = 0
+     i = %1
+  label startfor1 :
+     %2 = 10
+     %3 = i < %2
+     ifFalse %3 goto endfor1
+
+[...]
+```
+
+Then execute the code with the virtual machine (you can add the input from a file if you want):
+
+```
+../tvm/tvm code.t [< input.in]
+```
+
 ## Built With
 
 * [ANTLR4](https://github.com/antlr/antlr4) - The parser generator used
