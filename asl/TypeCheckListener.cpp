@@ -147,16 +147,12 @@ void TypeCheckListener::enterAssignSt(AslParser::AssignStContext *ctx) {
 void TypeCheckListener::exitAssignSt(AslParser::AssignStContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->left_expr());
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr());
-  /*cout << endl << "assignment:      ";
-  Types.dump(t1); cout << "  =  ";Types.dump(t2); cout << endl;*/
 
   if (Types.isFunctionTy(t2)) {
     t2 = Types.getFuncReturnType(t2);
   }
-  //Types.dump(t1); cout << "  =  ";Types.dump(t2); cout << endl;
   if ((not Types.isErrorTy(t1)) and (not Types.isErrorTy(t2)) and
       not (Types.copyableTypes(t1, t2))) {
-      //Si realmente hay dos tipos (no se vale error) y son incompatibles
       Errors.incompatibleAssignment(ctx->ASSIGN());
   }
   if ((not Types.isErrorTy(t1)) and (not getIsLValueDecor(ctx->left_expr())))
@@ -192,10 +188,6 @@ void TypeCheckListener::enterForBlock(AslParser::ForBlockContext *ctx) {
 }
 
 void TypeCheckListener::exitForBlock(AslParser::ForBlockContext *ctx) {
-  /*TypesMgr::TypeId t1 = getTypeDecor(ctx->expr());
-
-  if ((not Types.isErrorTy(t1)) and (not Types.isBooleanTy(t1)))
-    Errors.booleanRequired(ctx);*/
   DEBUG_EXIT();
 }
 
@@ -246,8 +238,6 @@ void TypeCheckListener::enterLeft_expr(AslParser::Left_exprContext *ctx) {
   DEBUG_ENTER();
 }
 void TypeCheckListener::exitLeft_expr(AslParser::Left_exprContext *ctx) {
-  /*if (ctx->ident()) std::cout << "Left Expr Ident    " << std::endl;
-  if (ctx->array_access()) std::cout << "Left Expr Array    " << std::endl;*/
   TypesMgr::TypeId t1;
   bool b;
   if (ctx->ident()) {
@@ -258,11 +248,9 @@ void TypeCheckListener::exitLeft_expr(AslParser::Left_exprContext *ctx) {
   	t1 = getTypeDecor(ctx->array_access());
   	b = getIsLValueDecor(ctx->array_access());
   }
-  //Types.dumpare(t1);
   putTypeDecor(ctx, t1);
   putIsLValueDecor(ctx, b);
   DEBUG_EXIT();
-  //cout << "    dw" << endl;
 }
 
 void TypeCheckListener::enterParenthesis(AslParser::ParenthesisContext *ctx) {
@@ -279,18 +267,14 @@ void TypeCheckListener::enterUnary(AslParser::UnaryContext *ctx) {
 }
 void TypeCheckListener::exitUnary(AslParser::UnaryContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr());
-  //cout << "Unary: ";Types.dump(t1); 
   if (ctx->NOT()) {
     if ((not Types.isErrorTy(t1)) and not Types.isBooleanTy(t1)) Errors.incompatibleOperator(ctx->op);
-    //t1 = Types.createBooleanTy();
   }
   else if (ctx->MINUS()) {
     if ((not Types.isErrorTy(t1)) and not Types.isNumericTy(t1)) Errors.incompatibleOperator(ctx->op);
-    //t1 = Types.createIntegerTy();
   }
   else if (ctx->PLUS()) {
     if ((not Types.isErrorTy(t1)) and not Types.isNumericTy(t1)) Errors.incompatibleOperator(ctx->op);
-    //t1 = Types.createIntegerTy();
   }
   putTypeDecor(ctx, t1);
   putIsLValueDecor(ctx, false);
@@ -304,8 +288,6 @@ void TypeCheckListener::exitArithmetic(AslParser::ArithmeticContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
 
-  /*cout << endl << "arithmetic op:          ";
-  Types.dump(t1); cout << "   op   "; Types.dump(t2);cout << endl;*/
   if (((not Types.isErrorTy(t1)) and (not Types.isNumericTy(t1))) or
       ((not Types.isErrorTy(t2)) and (not Types.isNumericTy(t2))))
     Errors.incompatibleOperator(ctx->op);
@@ -326,8 +308,6 @@ void TypeCheckListener::exitArithmeticPow(AslParser::ArithmeticPowContext *ctx) 
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
 
-  /*cout << endl << "arithmetic op:          ";
-  Types.dump(t1); cout << "   op   "; Types.dump(t2);cout << endl;*/
   if (((not Types.isErrorTy(t1)) and (not Types.isNumericTy(t1))) or
       ((not Types.isErrorTy(t2)) and (not Types.isIntegerTy(t2))))
     Errors.incompatibleOperator(ctx->op);
@@ -350,9 +330,6 @@ void TypeCheckListener::exitBinaryop(AslParser::BinaryopContext *ctx) {
 
   if (Types.isFunctionTy(t1)) t1 = Types.getFuncReturnType(t1);
   if (Types.isFunctionTy(t2)) t2 = Types.getFuncReturnType(t2);
-
-  /*cout << endl << "binaryop:          ";
-  Types.dump(t1); cout << "   op   "; Types.dump(t2);cout << endl;*/
 
   if (((not Types.isErrorTy(t1)) and (not Types.isBooleanTy(t1))) or
       ((not Types.isErrorTy(t2)) and (not Types.isBooleanTy(t2))))
@@ -419,12 +396,8 @@ void TypeCheckListener::enterArrayAccess(AslParser::ArrayAccessContext *ctx) {
   DEBUG_ENTER();
 }
 void TypeCheckListener::exitArrayAccess(AslParser::ArrayAccessContext *ctx) {
-  //General Array Access (left_expr and expr have specific functions, but this one is for checking
-  //that we're accessing an array type)
-
-  //Check ident
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
-  //Types.dump(t1);
+
   if (not Types.isErrorTy(t1)) {
     if (not Types.isArrayTy(t1)) 
         Errors.nonArrayInArrayAccess(ctx->ident());
@@ -434,7 +407,6 @@ void TypeCheckListener::exitArrayAccess(AslParser::ArrayAccessContext *ctx) {
     }
   }
 
-  //Check if the index is valid
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr());
 
   if (not Types.isIntegerTy(t2) and not Types.isErrorTy(t2)) Errors.nonIntegerIndexInArrayAccess(ctx->expr());
@@ -469,7 +441,6 @@ void TypeCheckListener::enterProcCall(AslParser::ProcCallContext *ctx) {
   DEBUG_ENTER();
 }
 void TypeCheckListener::exitProcCall(AslParser::ProcCallContext *ctx) {
-    //Symbols.popScope();
   std::string ident = ctx->funcCall()->ident()->ID()->getText();
   TypesMgr::TypeId t1 = getTypeDecor(ctx->funcCall()->ident());
   if (not Types.isErrorTy(t1)) {
@@ -484,13 +455,10 @@ void TypeCheckListener::exitProcCall(AslParser::ProcCallContext *ctx) {
 	    if (i != lParamsTy.size()) Errors.numberOfParameters(ctx);
 		else {
 			i = 0;
-		    //cout << "Func name: " << ident << endl;
 		    for(auto eCtx : ctx -> funcCall()->expr()){
-		    	//cout << "Iter: " << i << " size:  " << lParamsTy.size() << endl;
 		        TypesMgr::TypeId tExp = getTypeDecor(eCtx);
 		        if (not Types.copyableTypes(lParamsTy[i], tExp)) {
 		        	Errors.incompatibleParameter(eCtx, i+1, ctx);
-		        	//tRet = Types.createErrorTy();
 		        }
 		        i++;
 		    }
@@ -519,13 +487,10 @@ void TypeCheckListener::exitExprFuncCall(AslParser::ExprFuncCallContext *ctx) {
 	    if (i != lParamsTy.size()) Errors.numberOfParameters(ctx);
 		else {
 			i = 0;
-		    //cout << "Func name: " << ident << endl;
 		    for(auto eCtx : ctx -> expr()){
-		    	//cout << "Iter: " << i << " size:  " << lParamsTy.size() << endl;
 		        TypesMgr::TypeId tExp = getTypeDecor(eCtx);
 		        if (not Types.copyableTypes(lParamsTy[i], tExp)) {
 		        	Errors.incompatibleParameter(eCtx, i+1, ctx);
-		        	//tRet = Types.createErrorTy();
 		        }
 		        i++;
 		    }
