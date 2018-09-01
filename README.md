@@ -50,7 +50,7 @@ This installation guide was put together by [david-campos](https://github.com/da
   $ DESTDIR=../run make install
   ```
 
-  Assuming you we're still in the build directory you can use ../ as in the last instruction, which is basically:
+  Assuming you were still in the build directory you can use ../ as in the last instruction, which is basically:
   ```
   $ DESTDIR=antlr4-dir/run make install
   ```
